@@ -60,8 +60,8 @@ public class CityDetailsFragment extends Fragment {
     }
 
     class FetchWeatherAsync extends AsyncTask<CityInfo, Void, CityWeatherInfo> {
-
         private Throwable exception = null;
+
         @Override
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
@@ -70,9 +70,9 @@ public class CityDetailsFragment extends Fragment {
         @Override
         protected CityWeatherInfo doInBackground(CityInfo... cityInfos) {
             for (CityInfo cityInfo : cityInfos) {
-
                 try {
                     String res = HttpDownloader.httpGet(WEATHER_URL);
+                    return CityWeatherInfo.fromJsonString(res);
                 } catch (IOException e) {
                     exception = e;
                 }
