@@ -45,7 +45,7 @@ public class CityDetailsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+        progressBar = (ProgressBar) view.findViewById(R.id.city_details_progress_bar);
 
         Bundle bundle = getArguments();
         if (bundle == null) {
