@@ -1,8 +1,9 @@
 package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.opengl.EGLExt;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,9 +76,9 @@ public class CitiesListFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
                 viewHolder = new ViewHolder();
-                viewHolder.text = (TextView) convertView.findViewById(R.id.city_id);
+                viewHolder.text = (TextView) convertView.findViewById(android.R.id.text1);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();

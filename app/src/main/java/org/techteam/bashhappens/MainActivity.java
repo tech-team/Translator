@@ -1,8 +1,9 @@
 package org.techteam.bashhappens;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -11,7 +12,7 @@ import org.techteam.bashhappens.fragments.CityDetailsFragment;
 import org.techteam.bashhappens.fragments.CityInfo;
 
 
-public class MainActivity extends Activity implements CitiesListFragment.OnCitySelectedListener {
+public class MainActivity extends FragmentActivity implements CitiesListFragment.OnCitySelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +43,9 @@ public class MainActivity extends Activity implements CitiesListFragment.OnCityS
     @Override
     public void onCitySelected(CityInfo cityInfo) {
         CityDetailsFragment newFragment = CityDetailsFragment.getInstance(cityInfo);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.cities_fragment_container, newFragment);
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 }
