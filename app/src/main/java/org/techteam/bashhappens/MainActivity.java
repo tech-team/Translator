@@ -1,12 +1,17 @@
 package org.techteam.bashhappens;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.techteam.bashhappens.fragments.CitiesListFragment;
+import org.techteam.bashhappens.fragments.CityDetailsFragment;
+import org.techteam.bashhappens.fragments.CityInfo;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends Activity implements CitiesListFragment.OnCitySelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,5 +37,13 @@ public class MainActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCitySelected(CityInfo cityInfo) {
+        CityDetailsFragment newFragment = CityDetailsFragment.getInstance(cityInfo);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.add(R.id.cities_fragment_container, newFragment);
+        transaction.commit();
     }
 }
