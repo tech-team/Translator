@@ -1,6 +1,7 @@
 package org.techteam.bashhappens;
 
 import android.app.Activity;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -42,9 +43,10 @@ public class MainActivity extends FragmentActivity implements CitiesListFragment
 
     @Override
     public void onCitySelected(CityInfo cityInfo) {
+
         CityDetailsFragment newFragment = CityDetailsFragment.getInstance(cityInfo);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.cities_fragment_container, newFragment);
+        transaction.replace(R.id.cities_fragment_container, newFragment); //or add
         transaction.addToBackStack(null);
         transaction.commit();
     }
