@@ -1,9 +1,9 @@
 package org.techteam.bashhappens.fragments;
 
 public class CityInfo {
-    String city;
-    double lat;
-    double lng;
+    private String city;
+    private double lat;
+    private double lng;
 
     public CityInfo() {
         city = "";
@@ -18,4 +18,15 @@ public class CityInfo {
     }
 
 
+    public String getCity() {
+        return city;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
 }

@@ -12,9 +12,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.techteam.bashhappens.R;
+import org.techteam.bashhappens.net.Header;
 import org.techteam.bashhappens.net.HttpDownloader;
+import org.techteam.bashhappens.net.UrlParams;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CityDetailsFragment extends Fragment {
 
@@ -25,15 +29,16 @@ public class CityDetailsFragment extends Fragment {
     }
 
     private static final String LOG_TAG = CityDetailsFragment.class.getName();
-    private static final String WEATHER_URL = "";
+    private static final String WEATHER_URL = "https://simple-weather.p.mashape.com/weatherdata";
+    private static final String MASHAPE_KEY = "RbYUG4RsqfmshDx3n6j7N2DFCESmp1MlqLAjsnTMbLTunbcBEr";
     private ProgressBar progressBar;
 
     public static CityDetailsFragment getInstance(CityInfo cityInfo) {
         CityDetailsFragment detailFragment = new CityDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(BundleKeys.CITY_NAME, cityInfo.city);
-        bundle.putDouble(BundleKeys.LAT, cityInfo.lat);
-        bundle.putDouble(BundleKeys.LNG, cityInfo.lng);
+        bundle.putString(BundleKeys.CITY_NAME, cityInfo.getCity());
+        bundle.putDouble(BundleKeys.LAT, cityInfo.getLat());
+        bundle.putDouble(BundleKeys.LNG, cityInfo.getLng());
         detailFragment.setArguments(bundle);
         return detailFragment;
     }
@@ -71,7 +76,14 @@ public class CityDetailsFragment extends Fragment {
         protected CityWeatherInfo doInBackground(CityInfo... cityInfos) {
             for (CityInfo cityInfo : cityInfos) {
                 try {
-                    String res = HttpDownloader.httpGet(WEATHER_URL);
+                    List<Header> headers = new LinkedList<Header>();
+                    List<UrlParams> params = new LinkedList<UrlParams>();
+
+                    headers.add(new Header("X-Mashape-Key", MASHAPE_KEY));
+                    params.add(new UrlParams("lat", cityInfo.getLat().toString()));
+                    params.add(new UrlParams("lng", cityInfo.getLng().toString()));
+
+                    String res = HttpDownloader.httpGet(WEATHER_URL, params, headers);
                     return CityWeatherInfo.fromJsonString(res);
                 } catch (IOException e) {
                     exception = e;
@@ -86,6 +98,9 @@ public class CityDetailsFragment extends Fragment {
             if (exception != null) {
                 exception.printStackTrace();
                 String text = "Error happened: " + exception.getMessage();
+                Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_LONG).show();
+            } else {
+                String text = "Done!";
                 Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_LONG).show();
             }
         }

@@ -84,7 +84,7 @@ public class CitiesListFragment extends Fragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.text.setText(getItem(position).city);
+            viewHolder.text.setText(getItem(position).getCity());
             return convertView;
         }
 

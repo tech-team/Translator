@@ -5,32 +5,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 public class HttpDownloader {
 
-    class Header {
-        String name;
-        String value;
-
-        Header(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-    }
-
     public static String httpGet(String url) throws IOException {
-        return httpGet(url, null);
+        return httpGet(url, null, null);
     }
 
-    public static String httpGet(String url, List<Header> headers) throws IOException {
-        URL urlObj = new URL(url);
+    public static String httpGet(String url, List<UrlParams> params, List<Header> headers) throws IOException {
+        URL urlObj = constructUrl(url, params);
         HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
         connection.setRequestMethod("GET");
         if (headers != null) {
             for (Header h : headers) {
-                connection.setRequestProperty(h.name, h.value);
+                connection.setRequestProperty(h.getName(), h.getValue());
             }
         }
         connection.connect();
@@ -44,8 +35,17 @@ public class HttpDownloader {
         return res;
     }
 
+    private static URL constructUrl(String url, List<UrlParams> params) throws MalformedURLException {
+        if (params == null || params.isEmpty()) {
+            return new URL(url);
+        }
+        String newUrl = url + "?";
+        for (UrlParams p : params) {
+            newUrl += p.getKey() + "=" + p.getValue()+ "&";
+        }
 
-
+        return new URL(newUrl.substring(0, newUrl.length() - 2));
+    }
 
 
     private static String handleInputStream(InputStream in) throws IOException {
