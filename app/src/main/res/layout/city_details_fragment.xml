@@ -6,7 +6,19 @@
     android:layout_margin="10dp"
     android:orientation="vertical">
 
+    <ProgressBar
+        android:id="@+id/city_details_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible"
+        android:indeterminate="true"
+        >
+    </ProgressBar>
+
     <GridLayout
+        android:id="@+id/city_details_info"
+        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="fill"
@@ -54,14 +66,4 @@
             android:layout_column="1"
             style="@style/detailsTextValue" />
     </GridLayout>
-
-    <ProgressBar
-        android:id="@+id/city_details_progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:visibility="invisible"
-        android:indeterminate="true"
-        >
-    </ProgressBar>
 </LinearLayout>

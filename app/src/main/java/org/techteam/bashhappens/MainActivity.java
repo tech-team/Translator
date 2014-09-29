@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.techteam.bashhappens.fragments.CitiesListFragment;
 import org.techteam.bashhappens.fragments.CityDetailsFragment;
@@ -19,6 +20,11 @@ public class MainActivity extends FragmentActivity implements CitiesListFragment
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (findViewById(R.id.cities_fragment_container) != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.cities_fragment_container, new CitiesListFragment())
+                    .commit();
+        }
     }
 
 
@@ -43,7 +49,6 @@ public class MainActivity extends FragmentActivity implements CitiesListFragment
 
     @Override
     public void onCitySelected(CityInfo cityInfo) {
-
         CityDetailsFragment newFragment = CityDetailsFragment.getInstance(cityInfo);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.cities_fragment_container, newFragment); //or add

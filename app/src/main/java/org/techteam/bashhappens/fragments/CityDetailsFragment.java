@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ public class CityDetailsFragment extends Fragment {
     private static final String WEATHER_URL = "https://simple-weather.p.mashape.com/weatherdata";
     private static final String MASHAPE_KEY = "RbYUG4RsqfmshDx3n6j7N2DFCESmp1MlqLAjsnTMbLTunbcBEr";
     private ProgressBar progressBar;
+    private View detailsGrid;
 
     public static CityDetailsFragment getInstance(CityInfo cityInfo) {
         CityDetailsFragment detailFragment = new CityDetailsFragment();
@@ -45,12 +47,13 @@ public class CityDetailsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.city_details_fragment, null);
+        return inflater.inflate(R.layout.city_details_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         progressBar = (ProgressBar) view.findViewById(R.id.city_details_progress_bar);
+        detailsGrid = view.findViewById(R.id.city_details_info);
 
         Bundle bundle = getArguments();
         if (bundle == null) {
@@ -70,6 +73,7 @@ public class CityDetailsFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             progressBar.setVisibility(View.VISIBLE);
+            detailsGrid.setVisibility(View.GONE);
         }
 
         @Override
@@ -94,7 +98,9 @@ public class CityDetailsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(CityWeatherInfo weather) {
-            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.GONE);
+            detailsGrid.setVisibility(View.VISIBLE);
+
             if (exception != null) {
                 exception.printStackTrace();
                 String text = "Error happened: " + exception.getMessage();
