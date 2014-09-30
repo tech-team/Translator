@@ -21,6 +21,9 @@ public class MainActivity extends FragmentActivity implements CitiesListFragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.cities_fragment_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.cities_fragment_container, new CitiesListFragment())
                     .commit();
@@ -51,7 +54,8 @@ public class MainActivity extends FragmentActivity implements CitiesListFragment
     public void onCitySelected(CityInfo cityInfo) {
         CityDetailsFragment newFragment = CityDetailsFragment.getInstance(cityInfo);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.cities_fragment_container, newFragment); //or add
+        transaction.replace(R.id.cities_fragment_container, newFragment);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.addToBackStack(null);
         transaction.commit();
     }

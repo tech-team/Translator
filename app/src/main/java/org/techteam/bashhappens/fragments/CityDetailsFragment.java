@@ -104,10 +104,10 @@ public class CityDetailsFragment extends Fragment {
             if (exception != null) {
                 exception.printStackTrace();
                 String text = "Error happened: " + exception.getMessage();
-                Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
             } else {
                 String text = "Done!";
-                Toast.makeText(getActivity().getApplicationContext(), text, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
             }
         }
     }

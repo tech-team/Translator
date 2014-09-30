@@ -24,8 +24,10 @@ public class CitiesListFragment extends Fragment {
     public CitiesListFragment() {
         super();
 
-        cities.add(new CityInfo("Moscow", 0, 0));
-        cities.add(new CityInfo("St. Petersburg", 1, 1));
+        cities.add(new CityInfo("Москва", 55.750934, 37.621319));
+        cities.add(new CityInfo("Санкт-Петербург", 59.934516, 30.327412));
+        cities.add(new CityInfo("Нижний Новгород", 56.326994, 44.006168));
+        cities.add(new CityInfo("Казань", 55.796372, 49.111794));
     }
 
     @Override
