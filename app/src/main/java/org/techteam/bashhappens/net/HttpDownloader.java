@@ -16,8 +16,6 @@ import javax.net.ssl.SSLContext;
 
 public class HttpDownloader {
 
-    private static SSLContext sslContext;
-
     public static class Request {
         private String url;
         private List<UrlParams> params;
@@ -52,67 +50,23 @@ public class HttpDownloader {
 
     public static String httpGet(String url, List<UrlParams> params, List<Header> headers) throws IOException {
         URL urlObj = constructUrl(url, params);
+        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
 
-        if (urlObj.getProtocol().equals("https")) {
-            HttpsURLConnection connection = (HttpsURLConnection) urlObj.openConnection();
-            SSLContext sc = getSslContext();
-            connection.setSSLSocketFactory(sc.getSocketFactory());
-
-            connection.setRequestMethod("GET");
-            if (headers != null) {
-                for (Header igor : headers) {
-                    connection.setRequestProperty(igor.getName(), igor.getValue());
-                }
-            }
-            connection.setDoInput(true);
-
-            connection.connect();
-
-            String res = null;
-//            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                InputStream in = connection.getInputStream();
-                res = handleInputStream(in);
-//            }
-            connection.disconnect();
-            return res;
-        } else {
-            HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
-
-            connection.setRequestMethod("GET");
-            if (headers != null) {
-                for (Header h : headers) {
-                    connection.setRequestProperty(h.getName(), h.getValue());
-                }
-            }
-            connection.connect();
-
-            String res = null;
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                InputStream in = connection.getInputStream();
-                res = handleInputStream(in);
-            }
-            connection.disconnect();
-            return res;
-        }
-
-//        if (connection == null)
-//            throw new IOException("Couldn't create a url connection");
-
-
-    }
-
-    private static SSLContext getSslContext() throws IOException {
-        if (sslContext == null) {
-            try {
-                sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, null, new java.security.SecureRandom());
-            } catch (NoSuchAlgorithmException e) {
-                throw new IOException(e);
-            } catch (KeyManagementException e) {
-                throw new IOException(e);
+        connection.setRequestMethod("GET");
+        if (headers != null) {
+            for (Header h : headers) {
+                connection.setRequestProperty(h.getName(), h.getValue());
             }
         }
-        return sslContext;
+        connection.connect();
+
+        String res = null;
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            InputStream in = connection.getInputStream();
+            res = handleInputStream(in);
+        }
+        connection.disconnect();
+        return res;
     }
 
     private static URL constructUrl(String url, List<UrlParams> params) throws MalformedURLException {
