@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.techteam.bashhappens.api.API;
 import org.techteam.bashhappens.api.LanguageList;
@@ -14,6 +15,8 @@ import java.io.IOException;
 
 public class SplashActivity extends Activity {
     private static final String LOG_TAG = SplashActivity.class.getName();
+
+    private static LanguageList languagesList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +32,13 @@ public class SplashActivity extends Activity {
         SplashActivity.this.finish();
     }
 
+    public static LanguageList getLanguagesList() {
+        return languagesList;
+    }
+
     private class FetchLanguagesAsync extends AsyncTask<Void, Void, LanguageList> {
         private Throwable exception = null;
+        private static final int RETRY_COUNT = 3;
 
         @Override
         protected void onPreExecute() {
@@ -40,28 +48,32 @@ public class SplashActivity extends Activity {
         @Override
         protected LanguageList doInBackground(Void... voids) {
             HttpDownloader.Request req = API.REQUEST_BUILDER.getLangsRequest("ru");
-            try {
-                String response = HttpDownloader.httpGet(req);
-                Log.d(LOG_TAG, response);
+            LanguageList list = null;
+            for (int i = 0; i < RETRY_COUNT; ++i) {
+                Log.d(LOG_TAG, "retry #" + i);
+                try {
+                    String response = HttpDownloader.httpGet(req);
+                    Log.d(LOG_TAG, response);
 
-                return LanguageList.fromJsonString(response);
-            } catch (IOException e) {
-                exception = e;
-            }
+                    list = LanguageList.fromJsonString(response);
+                    if (list != null)
+                        break;
+                } catch (IOException e) {
+                    exception = e;
+                }
+            }         
 
-            return null;
+            return list;
         }
 
         @Override
         protected void onPostExecute(LanguageList list) {
             if (exception != null) {
                 exception.printStackTrace();
-//                String text = "Error happened: " + exception.getMessage();
-//                Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
+                String text = "Error happened: " + exception.getMessage();
+                Toast.makeText(SplashActivity.this.getApplicationContext(), text, Toast.LENGTH_LONG).show();
             } else {
                 onListFetched(list);
-//                String text = "Done!";
-//                Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
             }
         }
     }
