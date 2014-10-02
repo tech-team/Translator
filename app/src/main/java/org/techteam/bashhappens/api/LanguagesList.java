@@ -1,4 +1,4 @@
-package org.techteam.bashhappens.fragments;
+package org.techteam.bashhappens.api;
 
 
 import org.json.*;

@@ -7,9 +7,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+
 public class HttpDownloader {
+
+    private static SSLContext sslContext;
 
     public static class Request {
         private String url;
@@ -45,22 +52,67 @@ public class HttpDownloader {
 
     public static String httpGet(String url, List<UrlParams> params, List<Header> headers) throws IOException {
         URL urlObj = constructUrl(url, params);
-        HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
-        connection.setRequestMethod("GET");
-        if (headers != null) {
-            for (Header h : headers) {
-                connection.setRequestProperty(h.getName(), h.getValue());
+
+        if (urlObj.getProtocol().equals("https")) {
+            HttpsURLConnection connection = (HttpsURLConnection) urlObj.openConnection();
+            SSLContext sc = getSslContext();
+            connection.setSSLSocketFactory(sc.getSocketFactory());
+
+            connection.setRequestMethod("GET");
+            if (headers != null) {
+                for (Header h : headers) {
+                    connection.setRequestProperty(h.getName(), h.getValue());
+                }
+            }
+            connection.setDoInput(true);
+
+            connection.connect();
+
+            String res = null;
+//            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream in = connection.getInputStream();
+                res = handleInputStream(in);
+//            }
+            connection.disconnect();
+            return res;
+        } else {
+            HttpURLConnection connection = (HttpURLConnection) urlObj.openConnection();
+
+            connection.setRequestMethod("GET");
+            if (headers != null) {
+                for (Header h : headers) {
+                    connection.setRequestProperty(h.getName(), h.getValue());
+                }
+            }
+            connection.connect();
+
+            String res = null;
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream in = connection.getInputStream();
+                res = handleInputStream(in);
+            }
+            connection.disconnect();
+            return res;
+        }
+
+//        if (connection == null)
+//            throw new IOException("Couldn't create a url connection");
+
+
+    }
+
+    private static SSLContext getSslContext() throws IOException {
+        if (sslContext == null) {
+            try {
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, null, new java.security.SecureRandom());
+            } catch (NoSuchAlgorithmException e) {
+                throw new IOException(e);
+            } catch (KeyManagementException e) {
+                throw new IOException(e);
             }
         }
-        connection.connect();
-
-        String res = null;
-        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            InputStream in = connection.getInputStream();
-            res = handleInputStream(in);
-        }
-        connection.disconnect();
-        return res;
+        return sslContext;
     }
 
     private static URL constructUrl(String url, List<UrlParams> params) throws MalformedURLException {
@@ -69,10 +121,10 @@ public class HttpDownloader {
         }
         String newUrl = url + "?";
         for (UrlParams p : params) {
-            newUrl += p.getKey() + "=" + p.getValue()+ "&";
+            newUrl += p.getKey() + "=" + p.getValue() + "&";
         }
 
-        return new URL(newUrl.substring(0, newUrl.length() - 2));
+        return new URL(newUrl.substring(0, newUrl.length() - 1));
     }
 
 
