@@ -3,29 +3,33 @@ package org.techteam.bashhappens.api;
 
 import org.json.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LanguagesList {
+public class LanguageList {
 
-    private Map<String, String> langs = new HashMap<String, String>();
+    private List<LanguageEntry> langs = new ArrayList<LanguageEntry>();
+
+    //private Map<String, String> langs = new HashMap<String, String>();
     private Set<String> dirs = new HashSet<String>();
 
-    private LanguagesList() {
+    private LanguageList() {
 
     }
 
-    public static LanguagesList fromJsonString(String json) {
+    public static LanguageList fromJsonString(String json) {
         try {
             JSONObject obj = new JSONObject(json);
-            LanguagesList languagesList = new LanguagesList();
+            LanguageList languageList = new LanguageList();
 
             JSONArray dirs = obj.getJSONArray("posts");
             for (int i=0; i<dirs.length(); ++i) {
-                languagesList.dirs.add(dirs.getString(i));
+                languageList.dirs.add(dirs.getString(i));
             }
 
             JSONObject langs = obj.getJSONObject("langs");
@@ -33,10 +37,13 @@ public class LanguagesList {
 
             while (keys.hasNext()) {
                 String key = (String)keys.next();
-                languagesList.langs.put(key, (String) langs.get(key));
+                languageList.langs.add(
+                        new LanguageEntry(
+                                key,
+                                (String) langs.get(key)));
             }
 
-            return languagesList;
+            return languageList;
         }
         catch (JSONException exc) {
             exc.printStackTrace();
@@ -44,10 +51,9 @@ public class LanguagesList {
         }
     }
 
-    public Map<String, String> getLanguages() {
+    public List<LanguageEntry> getLanguages() {
         return langs;
     }
-
     public Set<String> getDirections() {
         return dirs;
     }

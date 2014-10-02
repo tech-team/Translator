@@ -1,6 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity" >
+
+    <item android:id="@+id/action_language_from"
+        android:title="@string/placeholder"
+        android:showAsAction="always" />
+
+    <item android:id="@+id/action_language_swap"
+        android:icon="@android:drawable/btn_default_small"
+        android:showAsAction="always" />
+
+    <item android:id="@+id/action_language_to"
+        android:title="@string/placeholder"
+        android:showAsAction="always" />
+
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"

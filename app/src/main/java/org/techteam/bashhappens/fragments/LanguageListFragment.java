@@ -1,7 +1,6 @@
 package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
-import android.opengl.EGLExt;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,21 +12,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.techteam.bashhappens.R;
+import org.techteam.bashhappens.api.LanguageEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CitiesListFragment extends Fragment {
-    private List<CityInfo> cities = new ArrayList<CityInfo>();
-    private OnCitySelectedListener mCallback;
+public class LanguageListFragment extends Fragment {
+    private List<LanguageEntry> languages = new ArrayList<LanguageEntry>();
+    private OnLanguageSelectedListener mCallback;
 
-    public CitiesListFragment() {
+    public LanguageListFragment() {
         super();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.cities_list_fragment, container, false);
+        return inflater.inflate(R.layout.language_list_fragment, container, false);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class CitiesListFragment extends Fragment {
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OnCitySelectedListener) activity;
+            mCallback = (OnLanguageSelectedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnItemSelectedListener");
@@ -47,25 +47,25 @@ public class CitiesListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ListView list = (ListView) view.findViewById(R.id.cities_list);
-        list.setAdapter(new NewsListAdapter(cities));
+        ListView list = (ListView) view.findViewById(R.id.languages_list);
+        list.setAdapter(new LanguageListAdapter(languages));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                CityInfo city = cities.get(position);
-                mCallback.onCitySelected(city);
+                LanguageEntry entry = languages.get(position);
+                mCallback.onLanguageSelected(entry);
             }
         });
     }
 
     // Container Activity must implement this interface
-    public interface OnCitySelectedListener {
-        public void onCitySelected(CityInfo cityInfo);
+    public interface OnLanguageSelectedListener {
+        public void onLanguageSelected(LanguageEntry language);
     }
 
-    private class NewsListAdapter extends ArrayAdapter<CityInfo> {
+    private class LanguageListAdapter extends ArrayAdapter<LanguageEntry> {
 
-        public NewsListAdapter(List<CityInfo> objects) {
+        public LanguageListAdapter(List<LanguageEntry> objects) {
             super(getActivity(), 0, objects);
         }
 
@@ -81,7 +81,7 @@ public class CitiesListFragment extends Fragment {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            viewHolder.text.setText(getItem(position).getCity());
+            viewHolder.text.setText(getItem(position).getName());
             return convertView;
         }
 

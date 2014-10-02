@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">WeatherApp</string>
+    <string name="app_name">Translator</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="splash_text">Hello World, splash</string>
@@ -9,5 +9,6 @@
     <string name="city_details_data_placeholder">…</string>
     <string name="city_details_temperature">Температура</string>
     <string name="city_details_humidity">Влажность</string>
+    <string name="placeholder">Language</string>
 
 </resources>

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import org.techteam.bashhappens.api.API;
-import org.techteam.bashhappens.api.LanguagesList;
+import org.techteam.bashhappens.api.LanguageList;
 import org.techteam.bashhappens.net.HttpDownloader;
 
 import java.io.IOException;
@@ -23,13 +23,13 @@ public class SplashActivity extends Activity {
         new FetchLanguagesAsync().execute();
     }
 
-    private void onListFetched(LanguagesList list) {
+    private void onListFetched(LanguageList list) {
         Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
         SplashActivity.this.startActivity(mainIntent);
         SplashActivity.this.finish();
     }
 
-    private class FetchLanguagesAsync extends AsyncTask<Void, Void, LanguagesList> {
+    private class FetchLanguagesAsync extends AsyncTask<Void, Void, LanguageList> {
         private Throwable exception = null;
 
         @Override
@@ -38,13 +38,13 @@ public class SplashActivity extends Activity {
         }
 
         @Override
-        protected LanguagesList doInBackground(Void... voids) {
+        protected LanguageList doInBackground(Void... voids) {
             HttpDownloader.Request req = API.REQUEST_BUILDER.getLangsRequest("ru");
             try {
                 String response = HttpDownloader.httpGet(req);
                 Log.d(LOG_TAG, response);
 
-                return LanguagesList.fromJsonString(response);
+                return LanguageList.fromJsonString(response);
             } catch (IOException e) {
                 exception = e;
             }
@@ -53,7 +53,7 @@ public class SplashActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(LanguagesList list) {
+        protected void onPostExecute(LanguageList list) {
             if (exception != null) {
                 exception.printStackTrace();
 //                String text = "Error happened: " + exception.getMessage();
