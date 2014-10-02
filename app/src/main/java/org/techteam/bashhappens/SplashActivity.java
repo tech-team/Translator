@@ -72,6 +72,7 @@ public class SplashActivity extends Activity {
                 exception.printStackTrace();
                 String text = "Error happened: " + exception.getMessage();
                 Toast.makeText(SplashActivity.this.getApplicationContext(), text, Toast.LENGTH_LONG).show();
+                onListFetched(list);
             } else {
                 onListFetched(list);
             }

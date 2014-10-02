@@ -3,7 +3,6 @@ package org.techteam.bashhappens.api;
 import org.json.*;
 
 public class Translation {
-
     private int code;
     private String lang;
     private String text;

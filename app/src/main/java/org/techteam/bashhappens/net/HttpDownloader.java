@@ -60,8 +60,8 @@ public class HttpDownloader {
 
             connection.setRequestMethod("GET");
             if (headers != null) {
-                for (Header h : headers) {
-                    connection.setRequestProperty(h.getName(), h.getValue());
+                for (Header igor : headers) {
+                    connection.setRequestProperty(igor.getName(), igor.getValue());
                 }
             }
             connection.setDoInput(true);
