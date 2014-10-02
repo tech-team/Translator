@@ -11,8 +11,36 @@ import java.util.List;
 
 public class HttpDownloader {
 
+    public static class Request {
+        private String url;
+        private List<UrlParams> params;
+        private List<Header> headers;
+
+        public Request(String url, List<UrlParams> params, List<Header> headers) {
+            this.url = url;
+            this.params = params;
+            this.headers = headers;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public List<UrlParams> getParams() {
+            return params;
+        }
+
+        public List<Header> getHeaders() {
+            return headers;
+        }
+    }
+
     public static String httpGet(String url) throws IOException {
         return httpGet(url, null, null);
+    }
+
+    public static String httpGet(Request request) throws IOException {
+        return httpGet(request.getUrl(), request.getParams(), request.getHeaders());
     }
 
     public static String httpGet(String url, List<UrlParams> params, List<Header> headers) throws IOException {
