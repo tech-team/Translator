@@ -99,6 +99,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(translationBroadcastReceiver);
     }

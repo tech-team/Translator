@@ -55,6 +55,7 @@ public class SplashActivity extends Activity {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(languageListBroadcastReceiver);
     }
