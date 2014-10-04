@@ -40,8 +40,6 @@ public class SplashActivity extends Activity {
         Intent languageListServiceIntent = new Intent(this, LanguageListService.class);
         languageListServiceIntent.putExtra("ui", "ru");
         startService(languageListServiceIntent);
-
-        //new FetchLanguagesAsync().execute();
     }
 
     private void onListFetched(Bundle bundle) {
@@ -67,49 +65,4 @@ public class SplashActivity extends Activity {
             onListFetched(intent.getExtras());
         }
     }
-
-    /*
-    private class FetchLanguagesAsync extends AsyncTask<Void, Void, LanguageList> {
-        private Throwable exception = null;
-        private static final int RETRY_COUNT = 3;
-
-        @Override
-        protected void onPreExecute() {
-
-        }
-
-        @Override
-        protected LanguageList doInBackground(Void... voids) {
-            HttpDownloader.Request req = API.REQUEST_BUILDER.getLangsRequest("ru");
-            LanguageList list = null;
-            for (int i = 0; i < RETRY_COUNT; ++i) {
-                Log.d(LOG_TAG, "retry #" + i);
-                try {
-                    String response = HttpDownloader.httpGet(req);
-                    Log.d(LOG_TAG, response);
-
-                    list = LanguageList.fromJsonString(response);
-                    if (list != null)
-                        break;
-                } catch (IOException e) {
-                    exception = e;
-                }
-            }         
-
-            return list;
-        }
-
-        @Override
-        protected void onPostExecute(LanguageList list) {
-            if (exception != null) {
-                exception.printStackTrace();
-                String text = "Error happened: " + exception.getMessage();
-                Toast.makeText(SplashActivity.this.getApplicationContext(), text, Toast.LENGTH_LONG).show();
-                onListFetched(list);
-            } else {
-                onListFetched(list);
-            }
-        }
-    }
-    */
 }

@@ -26,7 +26,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     private TranslationBroadcastReceiver translationBroadcastReceiver;
     private static LanguageList languageList;
 
-    private Button languageFromButton;
+    private Button languageFromButton = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
