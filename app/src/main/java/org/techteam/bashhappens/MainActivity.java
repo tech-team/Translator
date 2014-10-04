@@ -24,7 +24,7 @@ import org.techteam.bashhappens.services.Constants;
 public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
-    private LanguageListBroadcastReceiver languageListBroadcastReceiver;
+    private static LanguageList languageList;
 
     private Button languageFromButton;
 
@@ -43,6 +43,9 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             }
         }
 
+        String languageListData = getIntent().getStringExtra("data");
+        languageList = LanguageList.fromJsonString(languageListData);
+
         languageFromButton = (Button) findViewById(R.id.language_from_button);
         languageFromButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,14 +60,9 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         //TODO: simplify?
         IntentFilter translationIntentFilter = new IntentFilter(
                 Constants.TRANSLATE_BROADCAST_ACTION);
-        IntentFilter languageListIntentFilter = new IntentFilter(
-                Constants.LANGUAGE_LIST_BROADCAST_ACTION);
         translationBroadcastReceiver = new TranslationBroadcastReceiver();
-        languageListBroadcastReceiver = new LanguageListBroadcastReceiver();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(translationBroadcastReceiver, translationIntentFilter);
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
     }
 
     @Override
@@ -115,8 +113,6 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     public void onDestroy() {
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(translationBroadcastReceiver);
-        LocalBroadcastManager.getInstance(this)
-                .unregisterReceiver(languageListBroadcastReceiver);
     }
 
     private final class TranslationBroadcastReceiver extends BroadcastReceiver {
@@ -131,23 +127,6 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             else {
                 String exception = intent.getStringExtra("exception");
                 Translation translation = new Translation(exception);
-                //TODO: what next, cap'n ?
-            }
-        }
-    }
-
-    private final class LanguageListBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String data = intent.getStringExtra("data");
-            if (data != null) {
-                LanguageList languageList = LanguageList.fromJsonString(data);
-                //TODO: todo todooo todooo
-            }
-            else {
-                String exception = intent.getStringExtra("exception");
-                LanguageList languageList = new LanguageList(exception);
                 //TODO: what next, cap'n ?
             }
         }
