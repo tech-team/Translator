@@ -4,21 +4,18 @@ package org.techteam.bashhappens.api;
 import org.json.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class LanguageList extends ServerResponse {
 
     private List<LanguageEntry> langs = new ArrayList<LanguageEntry>();
 
-    //private Map<String, String> langs = new HashMap<String, String>();
     private Set<String> dirs = new HashSet<String>();
 
-    public LanguageList(Throwable e) {
+    public LanguageList(String e) {
         setException(e);
     }
 
@@ -31,8 +28,8 @@ public class LanguageList extends ServerResponse {
             JSONObject obj = new JSONObject(json);
             LanguageList languageList = new LanguageList();
 
-            JSONArray dirs = obj.getJSONArray("posts");
-            for (int i=0; i<dirs.length(); ++i) {
+            JSONArray dirs = obj.getJSONArray("dirs");
+            for (int i = 0; i < dirs.length(); ++i) {
                 languageList.dirs.add(dirs.getString(i));
             }
 

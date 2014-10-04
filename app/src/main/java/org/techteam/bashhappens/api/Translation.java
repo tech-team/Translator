@@ -11,7 +11,7 @@ public class Translation extends ServerResponse {
 
     }
 
-    public Translation(Throwable e) {
+    public Translation(String e) {
         setException(e);
     }
 

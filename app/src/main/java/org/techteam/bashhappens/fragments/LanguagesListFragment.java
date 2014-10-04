@@ -2,10 +2,14 @@ package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -17,17 +21,32 @@ import org.techteam.bashhappens.api.LanguageEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LanguageListFragment extends Fragment {
+public class LanguagesListFragment extends DialogFragment {
     private List<LanguageEntry> languages = new ArrayList<LanguageEntry>();
     private OnLanguageSelectedListener mCallback;
 
-    public LanguageListFragment() {
+    public LanguagesListFragment() {
         super();
+        languages.add(new LanguageEntry("english", "en"));
+        languages.add(new LanguageEntry("russian", "ru"));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.language_list_fragment, container, false);
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        getDialog().getWindow().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+        WindowManager.LayoutParams p = getDialog().getWindow().getAttributes();
+        p.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE;
+        p.x = 200;
+        getDialog().getWindow().setAttributes(p);
+        return inflater.inflate(R.layout.languages_list_fragment, container, false);
     }
 
     @Override
@@ -56,6 +75,7 @@ public class LanguageListFragment extends Fragment {
                 mCallback.onLanguageSelected(entry);
             }
         });
+
     }
 
     // Container Activity must implement this interface
