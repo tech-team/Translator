@@ -4,11 +4,9 @@
     <string name="app_name">Translator</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="splash_text">Hello World, splash</string>
-    <string name="city_details_name">Город</string>
-    <string name="city_details_data_placeholder">…</string>
-    <string name="city_details_temperature">Температура</string>
-    <string name="city_details_humidity">Влажность</string>
+    <string name="splash_text">Loading language list…</string>
     <string name="placeholder">Language</string>
+    <string name="button_translate">Translate</string>
+    <string name="text_to_translate_hint">Text to translate...</string>
 
 </resources>

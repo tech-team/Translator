@@ -1,5 +1,6 @@
 package org.techteam.bashhappens;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -15,17 +16,21 @@ public class MainActivity extends FragmentActivity implements LanguageListFragme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //ActionBar actionBar = getActionBar();
+        //if (actionBar != null)
+        //    actionBar.setDisplayShowTitleEnabled(false);
+
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.languages_fragment_container) != null) {
             if (savedInstanceState != null) {
                 return;
             }
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.languages_fragment_container, new LanguageListFragment())
-                    .commit();
+            //getSupportFragmentManager().beginTransaction()
+            //        .add(R.id.languages_fragment_container, new LanguageListFragment())
+            //        .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
