@@ -1,5 +1,6 @@
 package org.techteam.bashhappens;
 
+import android.app.ActionBar;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,31 +10,49 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import org.techteam.bashhappens.api.LanguageEntry;
+import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.api.LanguageList;
 import org.techteam.bashhappens.api.Translation;
-import org.techteam.bashhappens.fragments.LanguageListFragment;
+import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.services.Constants;
 
-public class MainActivity extends FragmentActivity implements LanguageListFragment.OnLanguageSelectedListener {
+public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
     private LanguageListBroadcastReceiver languageListBroadcastReceiver;
 
+    private Button languageFromButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //ActionBar actionBar = getActionBar();
+        //if (actionBar != null)
+        //    actionBar.setDisplayShowTitleEnabled(false);
+
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.languages_fragment_container) != null) {
             if (savedInstanceState != null) {
                 return;
             }
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.languages_fragment_container, new LanguageListFragment())
-                    .commit();
         }
+
+        languageFromButton = (Button) findViewById(R.id.language_from_button);
+        languageFromButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new LanguagesListFragment().show(getSupportFragmentManager(), "languagesList");
+//                getSupportFragmentManager().beginTransaction()
+//                        .add(R.id.languages_fragment_container, new LanguagesListFragment())
+//                        .commit();
+            }
+        });
 
         //TODO: simplify?
         IntentFilter translationIntentFilter = new IntentFilter(
@@ -47,7 +66,6 @@ public class MainActivity extends FragmentActivity implements LanguageListFragme
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,14 +109,6 @@ public class MainActivity extends FragmentActivity implements LanguageListFragme
                 "Selected language: " + entry.getName(),
                 Toast.LENGTH_SHORT)
                 .show();
-
-        //TODO: wut?
-        /*CityDetailsFragment newFragment = CityDetailsFragment.getInstance(cityInfo);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.cities_fragment_container, newFragment);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        transaction.addToBackStack(null);
-        transaction.commit();*/
     }
 
     @Override

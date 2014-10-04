@@ -28,8 +28,8 @@ public class LanguageList extends ServerResponse {
             JSONObject obj = new JSONObject(json);
             LanguageList languageList = new LanguageList();
 
-            JSONArray dirs = obj.getJSONArray("posts");
-            for (int i=0; i<dirs.length(); ++i) {
+            JSONArray dirs = obj.getJSONArray("dirs");
+            for (int i = 0; i < dirs.length(); ++i) {
                 languageList.dirs.add(dirs.getString(i));
             }
 
