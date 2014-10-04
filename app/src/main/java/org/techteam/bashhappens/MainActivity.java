@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.techteam.bashhappens.api.LanguageEntry;
@@ -25,7 +26,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     private TranslationBroadcastReceiver translationBroadcastReceiver;
     private static LanguagesList languagesList;
 
-    private Button languageFromButton = null;
+    private TextView translatedText = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
         String languageListData = getIntent().getStringExtra("data");
         languagesList = LanguagesList.fromJsonString(languageListData);
+
+        translatedText = (TextView) findViewById(R.id.translated_text);
     }
 
     private void registerBroadcastReceiver() {
@@ -97,6 +100,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             String data = intent.getStringExtra("data");
             if (data != null) {
                 Translation translation = Translation.fromJsonString(data);
+                translatedText.setText(translation.getText());
                 //TODO: todo todooo todooo
             }
             else {

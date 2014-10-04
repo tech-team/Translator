@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import org.techteam.bashhappens.services.Constants;
+import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.services.LanguageListService;
 
 public class SplashActivity extends Activity {
@@ -26,9 +27,7 @@ public class SplashActivity extends Activity {
 
         Toast.makeText(this.getBaseContext(), R.string.splash_text, Toast.LENGTH_LONG).show();
 
-        Intent languageListServiceIntent = new Intent(this, LanguageListService.class);
-        languageListServiceIntent.putExtra("ui", "ru");
-        startService(languageListServiceIntent);
+        startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru"));
     }
 
     private void registerBroadcastReceiver() {

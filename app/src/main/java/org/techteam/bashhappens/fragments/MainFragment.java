@@ -7,8 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.techteam.bashhappens.R;
+import org.techteam.bashhappens.services.IntentBuilder;
 
 public class MainFragment extends Fragment {
     private OnLanguagesRequestedListener mCallback;
@@ -31,8 +34,11 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        final EditText textToTranslate = (EditText) getActivity().findViewById(R.id.text_to_translate);
+
         Button fromLanguageButton = (Button) getActivity().findViewById(R.id.language_from_button);
         Button toLanguageButton = (Button) getActivity().findViewById(R.id.language_to_button);
+        Button translateButton = (Button) getActivity().findViewById(R.id.translate_button);
 
         fromLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +53,17 @@ public class MainFragment extends Fragment {
                 mCallback.onShowLanguages(false);
             }
         });
+
+        translateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Activity activity = getActivity();
+                activity.startService(
+                        IntentBuilder.translateIntent(activity,
+                                                      textToTranslate.getText().toString(),
+                                                      "en", "ru"));
+            }
+        });
     }
 
     @Override
@@ -57,7 +74,7 @@ public class MainFragment extends Fragment {
             mCallback = (OnLanguagesRequestedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnItemSelectedListener");
+                    + " must implement OnLanguagesRequestedListener");
         }
     }
 
@@ -65,7 +82,6 @@ public class MainFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
-
 
     public interface OnLanguagesRequestedListener {
         void onShowLanguages(boolean left);
