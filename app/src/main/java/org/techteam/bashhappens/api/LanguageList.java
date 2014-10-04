@@ -11,12 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LanguageList {
+public class LanguageList extends ServerResponse {
 
     private List<LanguageEntry> langs = new ArrayList<LanguageEntry>();
 
     //private Map<String, String> langs = new HashMap<String, String>();
     private Set<String> dirs = new HashSet<String>();
+
+    public LanguageList(Throwable e) {
+        setException(e);
+    }
 
     private LanguageList() {
 

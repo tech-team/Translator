@@ -2,13 +2,17 @@ package org.techteam.bashhappens.api;
 
 import org.json.*;
 
-public class Translation {
+public class Translation extends ServerResponse {
     private int code;
     private String lang;
     private String text;
 
     private Translation() {
 
+    }
+
+    public Translation(Throwable e) {
+        setException(e);
     }
 
     public static Translation fromJsonString(String json) {
