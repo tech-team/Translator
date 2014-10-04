@@ -23,6 +23,8 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        Toast.makeText(this.getBaseContext(), R.string.splash_text, Toast.LENGTH_LONG).show();
+
         new FetchLanguagesAsync().execute();
     }
 
