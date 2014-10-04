@@ -12,22 +12,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.api.LanguagesList;
 import org.techteam.bashhappens.api.Translation;
-import org.techteam.bashhappens.fragments.MainFragment;
 import org.techteam.bashhappens.services.Constants;
+import org.techteam.bashhappens.services.IntentBuilder;
 
-public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener, MainFragment.OnLanguagesRequestedListener {
+public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
-    private static LanguagesList languagesList;
+    private LanguagesList languagesList;
 
-    private TextView translatedText = null;
+    private TextView translatedText;
+    private EditText textToTranslate;
+    private Button fromLanguageButton;
+    private Button toLanguageButton;
+
+    private LanguageEntry fromLanguage;
+    private LanguageEntry toLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,70 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         languagesList = LanguagesList.fromJsonString(languageListData);
 
         translatedText = (TextView) findViewById(R.id.translated_text);
+        textToTranslate = (EditText) findViewById(R.id.text_to_translate);
+
+        fromLanguageButton = (Button) findViewById(R.id.language_from_button);
+        toLanguageButton = (Button) findViewById(R.id.language_to_button);
+        Button translateButton = (Button) findViewById(R.id.translate_button);
+        ImageButton swapLanguagesButton = (ImageButton) findViewById(R.id.language_swap_button);
+
+        fromLanguageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onShowLanguages(LangDirection.FROM);
+            }
+        });
+
+        toLanguageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onShowLanguages(LangDirection.TO);
+            }
+        });
+
+        translateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String text = textToTranslate.getText().toString().trim();
+
+                if (fromLanguage == null) {
+                    showToast(getString(R.string.from_language_not_selected));
+                } else if (toLanguage == null) {
+                    showToast(getString(R.string.to_language_not_selected));
+                } else if (text.equals("")) {
+                    showToast(getString(R.string.text_to_translate_not_filled));
+                } else {
+                    startService(IntentBuilder.translateIntent(MainActivity.this,
+                                text, fromLanguage.getUid(), toLanguage.getUid()));
+                }
+            }
+        });
+
+        swapLanguagesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                swapLanguages();
+            }
+        });
+    }
+
+    private void swapLanguages() {
+        if (fromLanguage != null && toLanguage != null) {
+            LanguageEntry temp = fromLanguage;
+            fromLanguage = toLanguage;
+            toLanguage = temp;
+
+            fromLanguageButton.setText(fromLanguage.getName());
+            toLanguageButton.setText(toLanguage.getName());
+        }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(
+                this.getBaseContext(),
+                message,
+                Toast.LENGTH_SHORT)
+                .show();
     }
 
     private void registerBroadcastReceiver() {
@@ -66,7 +139,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
         switch (id) {
             case R.id.action_settings:
-                Toast.makeText(this.getBaseContext(), "Settings", Toast.LENGTH_SHORT).show();
+                showToast("Settings");
                 break;
         }
 
@@ -81,18 +154,22 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     @Override
-    public void onLanguageSelected(LanguageEntry entry) {
-        Toast.makeText(
-                this.getBaseContext(),
-                "Selected language: " + entry.getName(),
-                Toast.LENGTH_SHORT)
-                .show();
+    public void onLanguageSelected(LanguageEntry entry, LangDirection direction) {
+        switch (direction) {
+            case FROM:
+                fromLanguage = entry;
+                fromLanguageButton.setText(entry.getName());
+                break;
+            case TO:
+                toLanguage = entry;
+                toLanguageButton.setText(entry.getName());
+                break;
+        }
+        getSupportFragmentManager().popBackStack();
     }
 
-    @Override
-    public void onShowLanguages(boolean left) {
-//        LanguagesListFragment.getInstance(languagesList).show(getSupportFragmentManager(), "languagesList");
-        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList);
+    public void onShowLanguages(LangDirection direction) {
+        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment)
                 .addToBackStack(null)
@@ -107,6 +184,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             String data = intent.getStringExtra("data");
             if (data != null) {
                 Translation translation = Translation.fromJsonString(data);
+                // TODO: handle error codes
                 translatedText.setText(translation.getText());
                 //TODO: todo todooo todooo
             }

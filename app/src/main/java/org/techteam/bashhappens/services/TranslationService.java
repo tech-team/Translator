@@ -23,7 +23,7 @@ public class TranslationService extends IntentService {
         HttpDownloader.Request request = API.REQUEST_BUILDER.translateRequest(text, lang);
         Intent localIntent = new Intent(Constants.TRANSLATE_BROADCAST_ACTION);
         try {
-            String response = HttpDownloader.httpGet(request);
+            String response = HttpDownloader.httpPost(request);
 
             localIntent.putExtra("data", response);
         }

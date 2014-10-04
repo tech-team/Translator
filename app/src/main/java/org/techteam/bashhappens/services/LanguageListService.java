@@ -23,7 +23,6 @@ public class LanguageListService extends IntentService {
         Intent localIntent = new Intent(Constants.LANGUAGE_LIST_BROADCAST_ACTION);
         try {
             String response = HttpDownloader.httpGet(request);
-            System.out.println(response);
 
             localIntent.putExtra("data", response);
         }

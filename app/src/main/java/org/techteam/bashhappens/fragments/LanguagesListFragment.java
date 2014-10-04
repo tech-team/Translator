@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.techteam.bashhappens.R;
+import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.api.LanguagesList;
 
@@ -25,13 +26,16 @@ import java.util.List;
 
 public class LanguagesListFragment extends Fragment {
     private static final String LANGUAGES_LIST_KEY = "languages_list";
+    private static final String LANGUAGES_DIRECTION_KEY = "languages_direction";
     private List<LanguageEntry> languages = new ArrayList<LanguageEntry>();
+    private LangDirection langDirection = null;
     private OnLanguageSelectedListener mCallback;
 
-    public static LanguagesListFragment getInstance(LanguagesList languagesList) {
+    public static LanguagesListFragment getInstance(LanguagesList languagesList, LangDirection direction) {
         LanguagesListFragment languagesListFragment = new LanguagesListFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(LANGUAGES_LIST_KEY, languagesList.getLanguages());
+        bundle.putString(LANGUAGES_DIRECTION_KEY, direction.toString());
         languagesListFragment.setArguments(bundle);
         return languagesListFragment;
     }
@@ -47,14 +51,6 @@ public class LanguagesListFragment extends Fragment {
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.languages_list_layout);
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
     }
 
     @Override
@@ -88,8 +84,18 @@ public class LanguagesListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Bundle args = getArguments();
-        if (args != null)
+        if (args != null) {
             languages = args.getParcelableArrayList(LANGUAGES_LIST_KEY);
+            langDirection = LangDirection.valueOf(args.getString(LANGUAGES_DIRECTION_KEY));
+        }
+
+        LinearLayout layout = (LinearLayout) view.findViewById(R.id.languages_list_layout);
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
 
         ListView list = (ListView) view.findViewById(R.id.languages_list);
         list.setAdapter(new LanguageListAdapter(languages));
@@ -97,7 +103,7 @@ public class LanguagesListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 LanguageEntry entry = languages.get(position);
-                mCallback.onLanguageSelected(entry);
+                mCallback.onLanguageSelected(entry, langDirection);
             }
         });
 
@@ -105,7 +111,7 @@ public class LanguagesListFragment extends Fragment {
 
     // Container Activity must implement this interface
     public interface OnLanguageSelectedListener {
-        public void onLanguageSelected(LanguageEntry language);
+        public void onLanguageSelected(LanguageEntry language, LangDirection direction);
     }
 
     private class LanguageListAdapter extends ArrayAdapter<LanguageEntry> {

@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/language_from_button"
             android:layout_gravity="left|top"
-            android:text="@string/placeholder"
+            android:text="@string/from_langiage_placeholder"
             style="?android:attr/buttonStyle" />
 
         <ImageButton
@@ -42,7 +42,7 @@
             android:layout_width="0dp"
             android:id="@+id/language_to_button"
             android:layout_gravity="right|top"
-            android:text="@string/placeholder"
+            android:text="@string/to_language_placeholder"
             style="?android:attr/buttonStyle" />
 
     </LinearLayout>
