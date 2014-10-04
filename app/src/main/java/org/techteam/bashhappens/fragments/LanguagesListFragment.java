@@ -17,18 +17,28 @@ import android.widget.TextView;
 
 import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LanguageEntry;
+import org.techteam.bashhappens.api.LanguagesList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LanguagesListFragment extends DialogFragment {
+    private static final String LANGUAGES_LIST_KEY = "languages_list";
     private List<LanguageEntry> languages = new ArrayList<LanguageEntry>();
     private OnLanguageSelectedListener mCallback;
 
+    public static LanguagesListFragment getInstance(LanguagesList languagesList) {
+        LanguagesListFragment languagesListFragment = new LanguagesListFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(LANGUAGES_LIST_KEY, languagesList.getLanguages());
+        languagesListFragment.setArguments(bundle);
+        return languagesListFragment;
+    }
+
     public LanguagesListFragment() {
         super();
-        languages.add(new LanguageEntry("english", "en"));
-        languages.add(new LanguageEntry("russian", "ru"));
+//        languages.add(new LanguageEntry("english", "en"));
+//        languages.add(new LanguageEntry("russian", "ru"));
     }
 
     @Override
@@ -40,12 +50,12 @@ public class LanguagesListFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-        getDialog().getWindow().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-        WindowManager.LayoutParams p = getDialog().getWindow().getAttributes();
-        p.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE;
-        p.x = 200;
-        getDialog().getWindow().setAttributes(p);
+//        getDialog().getWindow().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+//        WindowManager.LayoutParams p = getDialog().getWindow().getAttributes();
+//        p.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//        p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE;
+//        p.x = 200;
+//        getDialog().getWindow().setAttributes(p);
         return inflater.inflate(R.layout.languages_list_fragment, container, false);
     }
 
@@ -66,6 +76,9 @@ public class LanguagesListFragment extends DialogFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        languages = getArguments().getParcelableArrayList(LANGUAGES_LIST_KEY);
+
         ListView list = (ListView) view.findViewById(R.id.languages_list);
         list.setAdapter(new LanguageListAdapter(languages));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {

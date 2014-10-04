@@ -87,7 +87,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
     @Override
     public void onShowLanguages(boolean left) {
-        new LanguagesListFragment().show(getSupportFragmentManager(), "languagesList");
+        LanguagesListFragment.getInstance(languagesList).show(getSupportFragmentManager(), "languagesList");
     }
 
     private final class TranslationBroadcastReceiver extends BroadcastReceiver {

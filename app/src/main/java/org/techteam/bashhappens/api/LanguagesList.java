@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class LanguagesList extends ServerResponse {
 
-    private List<LanguageEntry> langs = new ArrayList<LanguageEntry>();
+    private ArrayList<LanguageEntry> langs = new ArrayList<LanguageEntry>();
 
     private Set<String> dirs = new HashSet<String>();
 
@@ -40,8 +40,8 @@ public class LanguagesList extends ServerResponse {
                 String key = (String)keys.next();
                 languagesList.langs.add(
                         new LanguageEntry(
-                                key,
-                                (String) langs.get(key)));
+                                (String) langs.get(key),
+                                key));
             }
 
             return languagesList;
@@ -52,7 +52,7 @@ public class LanguagesList extends ServerResponse {
         }
     }
 
-    public List<LanguageEntry> getLanguages() {
+    public ArrayList<LanguageEntry> getLanguages() {
         return langs;
     }
     public Set<String> getDirections() {
