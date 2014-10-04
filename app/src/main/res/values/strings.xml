@@ -8,5 +8,6 @@
     <string name="placeholder">Language</string>
     <string name="button_translate">Translate</string>
     <string name="text_to_translate_hint">Text to translate...</string>
+    <string name="swap_button_desc">Swap languages</string>
 
 </resources>

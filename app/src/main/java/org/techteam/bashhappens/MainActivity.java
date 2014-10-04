@@ -82,18 +82,6 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_language_from:
-                Toast.makeText(this.getBaseContext(), "From", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.action_language_to:
-                Toast.makeText(this.getBaseContext(), "To", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.action_language_swap:
-                Toast.makeText(this.getBaseContext(), "Swap", Toast.LENGTH_SHORT).show();
-                break;
-
             case R.id.action_settings:
                 Toast.makeText(this.getBaseContext(), "Settings", Toast.LENGTH_SHORT).show();
                 break;

@@ -31,7 +31,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/language_swap_button"
             android:src="@drawable/swap_icon"
-            style="?android:attr/buttonStyle" />
+            style="?android:attr/buttonStyle"
+            android:contentDescription="@string/swap_button_desc" />
 
         <Button
             android:layout_weight="2"
