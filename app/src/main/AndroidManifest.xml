@@ -34,6 +34,9 @@
         <service android:name=".services.TranslationService"
                  android:exported="false">
         </service>
+        <service android:name=".services.LanguageListService"
+                 android:exported="false">
+        </service>
 
     </application>
 

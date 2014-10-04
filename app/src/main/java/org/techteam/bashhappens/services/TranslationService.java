@@ -26,15 +26,12 @@ public class TranslationService extends IntentService {
             String response = HttpDownloader.httpGet(request);
 
             localIntent.putExtra("data", response);
-
-            LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
         }
         catch (IOException exc) {
             localIntent.putExtra("data", (String)null)
                        .putExtra("exception", exc.getMessage());
         }
-        finally {
-            LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
-        }
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
     }
 }
