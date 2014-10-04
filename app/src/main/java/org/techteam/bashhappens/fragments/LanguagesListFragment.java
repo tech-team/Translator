@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,7 +23,7 @@ import org.techteam.bashhappens.api.LanguagesList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LanguagesListFragment extends DialogFragment {
+public class LanguagesListFragment extends Fragment {
     private static final String LANGUAGES_LIST_KEY = "languages_list";
     private List<LanguageEntry> languages = new ArrayList<LanguageEntry>();
     private OnLanguageSelectedListener mCallback;
@@ -36,9 +37,6 @@ public class LanguagesListFragment extends DialogFragment {
     }
 
     public LanguagesListFragment() {
-        super();
-//        languages.add(new LanguageEntry("english", "en"));
-//        languages.add(new LanguageEntry("russian", "ru"));
     }
 
     @Override
@@ -47,9 +45,21 @@ public class LanguagesListFragment extends DialogFragment {
 //        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent);
     }
 
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        LinearLayout layout = (LinearLayout) getActivity().findViewById(R.id.languages_list_layout);
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 //        getDialog().getWindow().setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
 //        WindowManager.LayoutParams p = getDialog().getWindow().getAttributes();
 //        p.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -77,7 +87,9 @@ public class LanguagesListFragment extends DialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        languages = getArguments().getParcelableArrayList(LANGUAGES_LIST_KEY);
+        Bundle args = getArguments();
+        if (args != null)
+            languages = args.getParcelableArrayList(LANGUAGES_LIST_KEY);
 
         ListView list = (ListView) view.findViewById(R.id.languages_list);
         list.setAdapter(new LanguageListAdapter(languages));

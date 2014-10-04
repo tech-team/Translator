@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -90,7 +91,13 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
     @Override
     public void onShowLanguages(boolean left) {
-        LanguagesListFragment.getInstance(languagesList).show(getSupportFragmentManager(), "languagesList");
+//        LanguagesListFragment.getInstance(languagesList).show(getSupportFragmentManager(), "languagesList");
+        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList);
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, listFragment)
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
     }
 
     private final class TranslationBroadcastReceiver extends BroadcastReceiver {

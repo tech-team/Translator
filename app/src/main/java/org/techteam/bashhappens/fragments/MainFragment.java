@@ -34,6 +34,8 @@ public class MainFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+
+
         final EditText textToTranslate = (EditText) getActivity().findViewById(R.id.text_to_translate);
 
         Button fromLanguageButton = (Button) getActivity().findViewById(R.id.language_from_button);
