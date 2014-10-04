@@ -5,19 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.Toast;
 
-import org.techteam.bashhappens.api.API;
-import org.techteam.bashhappens.api.LanguageList;
-import org.techteam.bashhappens.net.HttpDownloader;
 import org.techteam.bashhappens.services.Constants;
 import org.techteam.bashhappens.services.LanguageListService;
-
-import java.io.IOException;
 
 public class SplashActivity extends Activity {
     private LanguageListBroadcastReceiver languageListBroadcastReceiver;
@@ -29,17 +22,21 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        languageListBroadcastReceiver = new LanguageListBroadcastReceiver();
-        IntentFilter languageListIntentFilter = new IntentFilter(
-                Constants.LANGUAGE_LIST_BROADCAST_ACTION);
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
+        registerBroadcastReceiver();
 
         Toast.makeText(this.getBaseContext(), R.string.splash_text, Toast.LENGTH_LONG).show();
 
         Intent languageListServiceIntent = new Intent(this, LanguageListService.class);
         languageListServiceIntent.putExtra("ui", "ru");
         startService(languageListServiceIntent);
+    }
+
+    private void registerBroadcastReceiver() {
+        languageListBroadcastReceiver = new LanguageListBroadcastReceiver();
+        IntentFilter languageListIntentFilter = new IntentFilter(
+                Constants.LANGUAGE_LIST_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
     }
 
     private void onListFetched(Bundle bundle) {

@@ -1,6 +1,5 @@
 package org.techteam.bashhappens;
 
-import android.app.ActionBar;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,48 +15,30 @@ import android.widget.Toast;
 
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
-import org.techteam.bashhappens.api.LanguageList;
+import org.techteam.bashhappens.api.LanguagesList;
 import org.techteam.bashhappens.api.Translation;
-import org.techteam.bashhappens.fragments.LanguagesListFragment;
+import org.techteam.bashhappens.fragments.MainFragment;
 import org.techteam.bashhappens.services.Constants;
 
-public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
+public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener, MainFragment.OnLanguagesRequestedListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
-    private static LanguageList languageList;
+    private static LanguagesList languagesList;
 
     private Button languageFromButton = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //ActionBar actionBar = getActionBar();
-        //if (actionBar != null)
-        //    actionBar.setDisplayShowTitleEnabled(false);
-
         setContentView(R.layout.activity_main);
-        if (findViewById(R.id.languages_fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-        }
+
+        registerBroadcastReceiver();
 
         String languageListData = getIntent().getStringExtra("data");
-        languageList = LanguageList.fromJsonString(languageListData);
+        languagesList = LanguagesList.fromJsonString(languageListData);
+    }
 
-        languageFromButton = (Button) findViewById(R.id.language_from_button);
-        languageFromButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new LanguagesListFragment().show(getSupportFragmentManager(), "languagesList");
-//                getSupportFragmentManager().beginTransaction()
-//                        .add(R.id.languages_fragment_container, new LanguagesListFragment())
-//                        .commit();
-            }
-        });
-
-        //TODO: simplify?
+    private void registerBroadcastReceiver() {
         IntentFilter translationIntentFilter = new IntentFilter(
                 Constants.TRANSLATE_BROADCAST_ACTION);
         translationBroadcastReceiver = new TranslationBroadcastReceiver();
@@ -89,6 +70,13 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(translationBroadcastReceiver);
+    }
+
+    @Override
     public void onLanguageSelected(LanguageEntry entry) {
         Toast.makeText(
                 this.getBaseContext(),
@@ -98,10 +86,8 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(this)
-                .unregisterReceiver(translationBroadcastReceiver);
+    public void onShowLanguages(boolean left) {
+        new LanguagesListFragment().show(getSupportFragmentManager(), "languagesList");
     }
 
     private final class TranslationBroadcastReceiver extends BroadcastReceiver {

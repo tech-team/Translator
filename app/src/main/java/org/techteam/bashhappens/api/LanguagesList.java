@@ -9,28 +9,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class LanguageList extends ServerResponse {
+public class LanguagesList extends ServerResponse {
 
     private List<LanguageEntry> langs = new ArrayList<LanguageEntry>();
 
     private Set<String> dirs = new HashSet<String>();
 
-    public LanguageList(String e) {
+    public LanguagesList(String e) {
         setException(e);
     }
 
-    private LanguageList() {
+    private LanguagesList() {
 
     }
 
-    public static LanguageList fromJsonString(String json) {
+    public static LanguagesList fromJsonString(String json) {
         try {
             JSONObject obj = new JSONObject(json);
-            LanguageList languageList = new LanguageList();
+            LanguagesList languagesList = new LanguagesList();
 
             JSONArray dirs = obj.getJSONArray("dirs");
             for (int i = 0; i < dirs.length(); ++i) {
-                languageList.dirs.add(dirs.getString(i));
+                languagesList.dirs.add(dirs.getString(i));
             }
 
             JSONObject langs = obj.getJSONObject("langs");
@@ -38,13 +38,13 @@ public class LanguageList extends ServerResponse {
 
             while (keys.hasNext()) {
                 String key = (String)keys.next();
-                languageList.langs.add(
+                languagesList.langs.add(
                         new LanguageEntry(
                                 key,
                                 (String) langs.get(key)));
             }
 
-            return languageList;
+            return languagesList;
         }
         catch (JSONException exc) {
             exc.printStackTrace();
