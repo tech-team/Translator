@@ -25,13 +25,14 @@
             android:text="@string/placeholder"
             style="?android:attr/buttonStyle" />
 
-        <Button
+        <ImageButton
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/language_swap_button"
-            android:text="&lt;-&gt;"
-            style="?android:attr/buttonStyle" />
+            android:src="@drawable/swap_icon"
+            style="?android:attr/buttonStyle"
+            android:contentDescription="@string/swap_button_desc" />
 
         <Button
             android:layout_weight="2"
