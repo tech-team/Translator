@@ -8,7 +8,7 @@
     <string name="from_langiage_placeholder">From</string>
     <string name="to_language_placeholder">To</string>
     <string name="button_translate">Translate</string>
-    <string name="text_to_translate_hint">Text to translate…</string>
+    <string name="text_to_translate_hint">Input text to translate…</string>
     <string name="swap_button_desc">Swap languages</string>
     <string name="from_language_not_selected">From language not selected</string>
     <string name="to_language_not_selected">To language not selected</string>

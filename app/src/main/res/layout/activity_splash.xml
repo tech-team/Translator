@@ -8,10 +8,10 @@
 
     <ImageView android:id="@+id/splash_screen"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:src="@drawable/splash"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
+        android:gravity="center"
         android:layout_weight="5"
         android:contentDescription="@string/splash_text" />
 
@@ -19,6 +19,9 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:orientation="horizontal">
             <ProgressBar
                 android:id="@+id/splash_progress"
@@ -30,6 +33,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="@string/splash_text"
                 android:id="@+id/splash_text" />
