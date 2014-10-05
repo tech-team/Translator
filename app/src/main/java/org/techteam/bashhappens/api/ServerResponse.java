@@ -1,8 +1,5 @@
 package org.techteam.bashhappens.api;
 
-/**
- * Created by igor on 10/4/14.
- */
 public abstract class ServerResponse {
     private String exception = null;
 
@@ -11,6 +8,6 @@ public abstract class ServerResponse {
     }
 
     protected void setException(String exception) {
-        this.exception = exception;
+        this.exception = "Error: " + exception;
     }
 }

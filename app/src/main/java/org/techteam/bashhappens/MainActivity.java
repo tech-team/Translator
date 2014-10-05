@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
+import org.techteam.bashhappens.api.TranslateErrors;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.api.LanguagesList;
 import org.techteam.bashhappens.api.Translation;
@@ -92,6 +93,8 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                     showToast(getString(R.string.to_language_not_selected));
                 } else if (text.equals("")) {
                     showToast(getString(R.string.text_to_translate_not_filled));
+                } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
+                    showToast(getString(R.string.text_is_too_long));
                 } else {
                     startService(IntentBuilder.translateIntent(MainActivity.this,
                                 text, fromLanguage.getUid(), toLanguage.getUid()));
@@ -200,14 +203,17 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             String data = intent.getStringExtra("data");
             if (data != null) {
                 Translation translation = Translation.fromJsonString(data);
-                // TODO: handle error codes
-                translatedText.setText(translation.getText());
-                //TODO: todo todooo todooo
+
+                if (translation.getCode() != TranslateErrors.ERR_OK) {
+                    showToast(TranslateErrors.getErrorMessage(translation.getCode()));
+                } else {
+                    translatedText.setText(translation.getText());
+                }
             }
             else {
                 String exception = intent.getStringExtra("exception");
                 Translation translation = new Translation(exception);
-                //TODO: what next, cap'n ?
+                showToast(translation.getException());
             }
         }
     }

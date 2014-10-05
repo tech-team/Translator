@@ -13,5 +13,6 @@
     <string name="from_language_not_selected">From language not selected</string>
     <string name="to_language_not_selected">To language not selected</string>
     <string name="text_to_translate_not_filled">Text to translate not filled</string>
+    <string name="text_is_too_long">Input text is too long</string>
 
 </resources>
