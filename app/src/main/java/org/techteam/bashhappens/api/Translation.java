@@ -3,6 +3,8 @@ package org.techteam.bashhappens.api;
 import org.json.*;
 
 public class Translation extends ServerResponse {
+    public static final int MAX_INPUT_TEXT_LENGTH = 10000;
+
     private int code;
     private String lang;
     private String text;
