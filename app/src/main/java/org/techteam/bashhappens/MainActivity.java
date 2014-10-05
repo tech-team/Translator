@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -25,6 +26,8 @@ import org.techteam.bashhappens.api.LanguagesList;
 import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.services.Constants;
 import org.techteam.bashhappens.services.IntentBuilder;
+
+import java.util.prefs.Preferences;
 
 public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
 
@@ -68,10 +71,6 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             return;
         }
 
-        //TODO: save user's lang selection to DB and restore here
-        setFromLanguage(languagesList.getLanguages().get(0));
-        setToLanguage(languagesList.getLanguages().get(1));
-
         fromLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,6 +111,25 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 swapLanguages();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences prefs = getPreferences(0);
+        setFromLanguage(new LanguageEntry(prefs.getString("fromLanguageName", languagesList.getLanguages().get(0).getName()),
+                prefs.getString("fromLanguageUid", languagesList.getLanguages().get(0).getUid())));
+        setToLanguage(new LanguageEntry(prefs.getString("toLanguageName", languagesList.getLanguages().get(1).getName()),
+                prefs.getString("toLanguageUid", languagesList.getLanguages().get(1).getUid())));
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        setFromLanguage((LanguageEntry)savedInstanceState.getParcelable("fromLanguage"));
+        setToLanguage((LanguageEntry)savedInstanceState.getParcelable("toLanguage"));
+        textToTranslate.setText(savedInstanceState.getString("textToTranslate"));
+        translatedText.setText(savedInstanceState.getString("translatedText"));
     }
 
     private void setFromLanguage(LanguageEntry lang) {
@@ -175,6 +193,28 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstancestate) {
+        savedInstancestate.putParcelable("fromLanguage", fromLanguage);
+        savedInstancestate.putParcelable("toLanguage", toLanguage);
+        savedInstancestate.putString("textToTranslate", textToTranslate.getText().toString().trim());
+        savedInstancestate.putString("translatedText", translatedText.getText().toString().trim());
+        super.onSaveInstanceState(savedInstancestate);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SharedPreferences prefs = getPreferences(0);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("fromLanguageUid", fromLanguage.getUid());
+        editor.putString("fromLanguageName", fromLanguage.getName());
+        editor.putString("toLanguageUid", toLanguage.getUid());
+        editor.putString("toLanguageName", toLanguage.getName());
+        editor.apply();
     }
 
     @Override
