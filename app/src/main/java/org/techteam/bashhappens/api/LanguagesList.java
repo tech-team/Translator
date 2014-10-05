@@ -4,6 +4,7 @@ package org.techteam.bashhappens.api;
 import org.json.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,8 @@ public class LanguagesList extends ServerResponse {
                                 (String) langs.get(key),
                                 key));
             }
+
+            Collections.sort(languagesList.langs);
 
             return languagesList;
         }

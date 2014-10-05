@@ -57,7 +57,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         Button translateButton = (Button) findViewById(R.id.translate_button);
         ImageButton swapLanguagesButton = (ImageButton) findViewById(R.id.language_swap_button);
 
-        if (languagesList == null) {
+        if (languagesList == null || languagesList.getLanguages().size() < 2) {
             showToast("Couldn't load languages list", true);
             translatedText.setEnabled(false);
             textToTranslate.setEnabled(false);
@@ -67,6 +67,10 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
             swapLanguagesButton.setEnabled(false);
             return;
         }
+
+        //TODO: save user's lang selection to DB and restore here
+        fromLanguageButton.setText(languagesList.getLanguages().get(0).getName());
+        toLanguageButton.setText(languagesList.getLanguages().get(1).getName());
 
         fromLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -3,7 +3,7 @@ package org.techteam.bashhappens.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class LanguageEntry implements Parcelable {
+public class LanguageEntry implements Parcelable, Comparable<LanguageEntry> {
     private String name;
     private String uid;
 
@@ -50,4 +50,9 @@ public class LanguageEntry implements Parcelable {
             return new LanguageEntry[size];
         }
     };
+
+    @Override
+    public int compareTo(LanguageEntry languageEntry) {
+        return this.getName().compareTo(languageEntry.getName());
+    }
 }
