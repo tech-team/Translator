@@ -24,6 +24,10 @@ public class LanguagesList extends ServerResponse {
     }
 
     public static LanguagesList fromJsonString(String json) {
+        if (json == null) {
+            return null;
+        }
+
         try {
             JSONObject obj = new JSONObject(json);
             LanguagesList languagesList = new LanguagesList();

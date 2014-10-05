@@ -25,7 +25,7 @@ public class SplashActivity extends Activity {
 
         registerBroadcastReceiver();
 
-        Toast.makeText(this.getBaseContext(), R.string.splash_text, Toast.LENGTH_LONG).show();
+//        Toast.makeText(this.getBaseContext(), R.string.splash_text, Toast.LENGTH_LONG).show();
 
         startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru"));
     }

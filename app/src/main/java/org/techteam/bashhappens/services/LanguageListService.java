@@ -27,7 +27,7 @@ public class LanguageListService extends IntentService {
             localIntent.putExtra("data", response);
         }
         catch (IOException exc) {
-            localIntent.putExtra("data", (String)null)
+            localIntent.putExtra("data", (String) null)
                        .putExtra("exception", exc.getMessage());
         }
 

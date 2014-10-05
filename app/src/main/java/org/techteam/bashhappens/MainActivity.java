@@ -56,6 +56,17 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         Button translateButton = (Button) findViewById(R.id.translate_button);
         ImageButton swapLanguagesButton = (ImageButton) findViewById(R.id.language_swap_button);
 
+        if (languagesList == null) {
+            showToast("Couldn't load languages list", true);
+            translatedText.setEnabled(false);
+            textToTranslate.setEnabled(false);
+            fromLanguageButton.setEnabled(false);
+            toLanguageButton.setEnabled(false);
+            translateButton.setEnabled(false);
+            swapLanguagesButton.setEnabled(false);
+            return;
+        }
+
         fromLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,10 +119,15 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     private void showToast(String message) {
+        showToast(message, false);
+    }
+
+    private void showToast(String message, boolean longToast) {
+        int length = longToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
         Toast.makeText(
                 this.getBaseContext(),
                 message,
-                Toast.LENGTH_SHORT)
+                length)
                 .show();
     }
 
