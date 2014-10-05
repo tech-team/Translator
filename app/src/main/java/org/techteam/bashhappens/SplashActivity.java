@@ -39,12 +39,13 @@ public class SplashActivity extends Activity {
     }
 
     private void onListFetched(Bundle bundle) {
+        /*
         Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
         for (String key: bundle.keySet()) {
             mainIntent.putExtra(key, bundle.getString(key));
         }
         SplashActivity.this.startActivity(mainIntent);
-        SplashActivity.this.finish();
+        SplashActivity.this.finish();*/
     }
 
     @Override
