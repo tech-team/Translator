@@ -7,11 +7,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.widget.Toast;
 
 import org.techteam.bashhappens.services.Constants;
 import org.techteam.bashhappens.services.IntentBuilder;
-import org.techteam.bashhappens.services.LanguageListService;
 
 public class SplashActivity extends Activity {
     private LanguageListBroadcastReceiver languageListBroadcastReceiver;
@@ -22,10 +20,7 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-
         registerBroadcastReceiver();
-
-//        Toast.makeText(this.getBaseContext(), R.string.splash_text, Toast.LENGTH_LONG).show();
 
         startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru"));
     }
@@ -34,7 +29,7 @@ public class SplashActivity extends Activity {
         languageListBroadcastReceiver = new LanguageListBroadcastReceiver();
         IntentFilter languageListIntentFilter = new IntentFilter(
                 Constants.LANGUAGE_LIST_BROADCAST_ACTION);
-        LocalBroadcastManager.getInstance(this)
+        LocalBroadcastManager.getInstance(SplashActivity.this)
                 .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
     }
 
@@ -50,7 +45,7 @@ public class SplashActivity extends Activity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this)
+        LocalBroadcastManager.getInstance(SplashActivity.this)
                 .unregisterReceiver(languageListBroadcastReceiver);
     }
 

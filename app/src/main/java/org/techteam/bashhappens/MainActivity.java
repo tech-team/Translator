@@ -69,8 +69,8 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         }
 
         //TODO: save user's lang selection to DB and restore here
-        fromLanguageButton.setText(languagesList.getLanguages().get(0).getName());
-        toLanguageButton.setText(languagesList.getLanguages().get(1).getName());
+        setFromLanguage(languagesList.getLanguages().get(0));
+        setToLanguage(languagesList.getLanguages().get(1));
 
         fromLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,14 +114,22 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         });
     }
 
+    private void setFromLanguage(LanguageEntry lang) {
+        fromLanguage = lang;
+        fromLanguageButton.setText(lang.getName());
+    }
+
+    private void setToLanguage(LanguageEntry lang) {
+        toLanguage = lang;
+        toLanguageButton.setText(lang.getName());
+    }
+
     private void swapLanguages() {
         if (fromLanguage != null && toLanguage != null) {
             LanguageEntry temp = fromLanguage;
-            fromLanguage = toLanguage;
-            toLanguage = temp;
 
-            fromLanguageButton.setText(fromLanguage.getName());
-            toLanguageButton.setText(toLanguage.getName());
+            setFromLanguage(toLanguage);
+            setToLanguage(temp);
         }
     }
 
@@ -180,12 +188,10 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     public void onLanguageSelected(LanguageEntry entry, LangDirection direction) {
         switch (direction) {
             case FROM:
-                fromLanguage = entry;
-                fromLanguageButton.setText(entry.getName());
+                setFromLanguage(entry);
                 break;
             case TO:
-                toLanguage = entry;
-                toLanguageButton.setText(entry.getName());
+                setToLanguage(entry);
                 break;
         }
         getSupportFragmentManager().popBackStack();
