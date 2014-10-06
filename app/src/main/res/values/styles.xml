@@ -5,6 +5,10 @@
 
     </style>
 
+    <style name="buttonBarStyle" parent="@android:style/Holo.Light.ButtonBar">
+        <item name="android:background">@color/action_bar</item>
+    </style>
+
     <style name="detailsText" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
