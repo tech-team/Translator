@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LanguagesListFragment extends Fragment {
+    public static final String NAME = LanguagesListFragment.class.getName();
+
     private static final String LANGUAGES_LIST_KEY = "languages_list";
     private static final String LANGUAGES_DIRECTION_KEY = "languages_direction";
     private ArrayList<LanguageEntry> languages = null;

@@ -11,35 +11,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.api.TranslateErrors;
+import org.techteam.bashhappens.fragments.TranslatorUI;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.api.LanguagesList;
 import org.techteam.bashhappens.api.Translation;
+import org.techteam.bashhappens.fragments.MainFragment;
 import org.techteam.bashhappens.services.Constants;
-import org.techteam.bashhappens.services.IntentBuilder;
 
-public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
+public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener, MainFragment.OnShowLanguagesListListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
     private LanguagesList languagesList;
-
-    private TextView translatedText;
-    private EditText textToTranslate;
-    private Button fromLanguageButton;
-    private Button toLanguageButton;
-
-    private LanguageEntry fromLanguage;
-    private LanguageEntry toLanguage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,103 +38,36 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         String languageListData = getIntent().getStringExtra("data");
         languagesList = LanguagesList.fromJsonString(languageListData);
 
-        translatedText = (TextView) findViewById(R.id.translated_text);
-        textToTranslate = (EditText) findViewById(R.id.text_to_translate);
 
-        fromLanguageButton = (Button) findViewById(R.id.language_from_button);
-        toLanguageButton = (Button) findViewById(R.id.language_to_button);
-        Button translateButton = (Button) findViewById(R.id.translate_button);
-        ImageButton swapLanguagesButton = (ImageButton) findViewById(R.id.language_swap_button);
+        TranslatorUI mainFragment = getTranslatorUIFragment();
 
         if (languagesList == null || languagesList.getLanguages().size() < 2) {
-            showToast("Couldn't load languages list", true);
-            translatedText.setEnabled(false);
-            textToTranslate.setEnabled(false);
-            fromLanguageButton.setEnabled(false);
-            toLanguageButton.setEnabled(false);
-            translateButton.setEnabled(false);
-            swapLanguagesButton.setEnabled(false);
-            return;
+            mainFragment.disableControls();
         }
-
-        fromLanguageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onShowLanguages(LangDirection.FROM);
-            }
-        });
-
-        toLanguageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onShowLanguages(LangDirection.TO);
-            }
-        });
-
-        translateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String text = textToTranslate.getText().toString().trim();
-
-                if (fromLanguage == null) {
-                    showToast(getString(R.string.from_language_not_selected));
-                } else if (toLanguage == null) {
-                    showToast(getString(R.string.to_language_not_selected));
-                } else if (text.equals("")) {
-                    showToast(getString(R.string.text_to_translate_not_filled));
-                } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
-                    showToast(getString(R.string.text_is_too_long));
-                } else {
-                    startService(IntentBuilder.translateIntent(MainActivity.this,
-                                text, fromLanguage.getUid(), toLanguage.getUid()));
-                }
-            }
-        });
-
-        swapLanguagesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                swapLanguages();
-            }
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         SharedPreferences prefs = getPreferences(0);
-        setFromLanguage(new LanguageEntry(prefs.getString("fromLanguageName", languagesList.getLanguages().get(0).getName()),
+
+        TranslatorUI f = getTranslatorUIFragment();
+
+        f.setFromLanguage(new LanguageEntry(prefs.getString("fromLanguageName", languagesList.getLanguages().get(0).getName()),
                 prefs.getString("fromLanguageUid", languagesList.getLanguages().get(0).getUid())));
-        setToLanguage(new LanguageEntry(prefs.getString("toLanguageName", languagesList.getLanguages().get(1).getName()),
+        f.setToLanguage(new LanguageEntry(prefs.getString("toLanguageName", languagesList.getLanguages().get(1).getName()),
                 prefs.getString("toLanguageUid", languagesList.getLanguages().get(1).getUid())));
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        setFromLanguage((LanguageEntry)savedInstanceState.getParcelable("fromLanguage"));
-        setToLanguage((LanguageEntry)savedInstanceState.getParcelable("toLanguage"));
-        textToTranslate.setText(savedInstanceState.getString("textToTranslate"));
-        translatedText.setText(savedInstanceState.getString("translatedText"));
     }
 
-    private void setFromLanguage(LanguageEntry lang) {
-        fromLanguage = lang;
-        fromLanguageButton.setText(lang.getName());
-    }
+    private TranslatorUI getTranslatorUIFragment() {
 
-    private void setToLanguage(LanguageEntry lang) {
-        toLanguage = lang;
-        toLanguageButton.setText(lang.getName());
-    }
-
-    private void swapLanguages() {
-        if (fromLanguage != null && toLanguage != null) {
-            LanguageEntry temp = fromLanguage;
-
-            setFromLanguage(toLanguage);
-            setToLanguage(temp);
-        }
+        // TODO: check for ClassCast
+        return (TranslatorUI) getSupportFragmentManager().findFragmentByTag(getString(R.string.main_fragment_tag));
     }
 
     private void showToast(String message) {
@@ -167,7 +87,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         IntentFilter translationIntentFilter = new IntentFilter(
                 Constants.TRANSLATE_BROADCAST_ACTION);
         translationBroadcastReceiver = new TranslationBroadcastReceiver();
-        LocalBroadcastManager.getInstance(this)
+        LocalBroadcastManager.getInstance(MainActivity.this)
                 .registerReceiver(translationBroadcastReceiver, translationIntentFilter);
     }
 
@@ -196,10 +116,6 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
     @Override
     public void onSaveInstanceState(Bundle savedInstancestate) {
-        savedInstancestate.putParcelable("fromLanguage", fromLanguage);
-        savedInstancestate.putParcelable("toLanguage", toLanguage);
-        savedInstancestate.putString("textToTranslate", textToTranslate.getText().toString().trim());
-        savedInstancestate.putString("translatedText", translatedText.getText().toString().trim());
         super.onSaveInstanceState(savedInstancestate);
     }
 
@@ -207,43 +123,48 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     public void onPause() {
         super.onPause();
 
+        TranslatorUI f = getTranslatorUIFragment();
+
         SharedPreferences prefs = getPreferences(0);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("fromLanguageUid", fromLanguage.getUid());
-        editor.putString("fromLanguageName", fromLanguage.getName());
-        editor.putString("toLanguageUid", toLanguage.getUid());
-        editor.putString("toLanguageName", toLanguage.getName());
+        editor.putString("fromLanguageUid", f.getFromLanguage().getUid());
+        editor.putString("fromLanguageName", f.getFromLanguage().getName());
+        editor.putString("toLanguageUid", f.getToLanguage().getUid());
+        editor.putString("toLanguageName", f.getToLanguage().getName());
         editor.apply();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this)
+
+        LocalBroadcastManager.getInstance(MainActivity.this)
                 .unregisterReceiver(translationBroadcastReceiver);
     }
 
     @Override
     public void onLanguageSelected(LanguageEntry entry, LangDirection direction) {
+        getSupportFragmentManager().popBackStack();
+
+        TranslatorUI f = getTranslatorUIFragment();
+
         switch (direction) {
             case FROM:
-                setFromLanguage(entry);
+                f.setFromLanguage(entry);
                 break;
             case TO:
-                setToLanguage(entry);
+                f.setToLanguage(entry);
                 break;
         }
-        getSupportFragmentManager().popBackStack();
     }
 
-    public void onShowLanguages(LangDirection direction) {
-        EditText textToTranslate = (EditText) findViewById(R.id.text_to_translate);
-        hideSoftKeyboard(textToTranslate);
 
+    @Override
+    public void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
         LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction, fromLanguage, toLanguage);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment)
-                .addToBackStack(null)
+                .addToBackStack(LanguagesListFragment.NAME)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
     }
@@ -259,7 +180,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 if (translation.getCode() != TranslateErrors.ERR_OK) {
                     showToast(TranslateErrors.getErrorMessage(translation.getCode()));
                 } else {
-                    translatedText.setText(translation.getText());
+                    getTranslatorUIFragment().setTranslatedText(translation.getText());
                 }
             }
             else {
@@ -268,11 +189,5 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 showToast(translation.getException());
             }
         }
-    }
-
-    private void hideSoftKeyboard(View view)
-    {
-        InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 }
