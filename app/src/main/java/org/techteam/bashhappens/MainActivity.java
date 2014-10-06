@@ -236,7 +236,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     public void onShowLanguages(LangDirection direction) {
-        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
+        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction, fromLanguage, toLanguage);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment)
                 .addToBackStack(null)

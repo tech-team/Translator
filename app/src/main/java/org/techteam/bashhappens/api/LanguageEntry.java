@@ -73,4 +73,9 @@ public class LanguageEntry implements Parcelable, Comparable<LanguageEntry> {
     public int hashCode() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "{ " + getUid() + ": " + getName() + " }";
+    }
 }

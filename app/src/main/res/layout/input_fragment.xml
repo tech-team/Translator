@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/language_from_button"
             android:layout_gravity="left|top"
-            android:text="@string/from_langiage_placeholder"
+            android:text="@string/from_language_placeholder"
             android:singleLine="true"
             style="?android:attr/buttonStyle" />
 
