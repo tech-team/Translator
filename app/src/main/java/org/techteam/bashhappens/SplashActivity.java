@@ -19,10 +19,16 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_splash);
         registerBroadcastReceiver();
 
         startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru"));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void registerBroadcastReceiver() {
@@ -40,6 +46,11 @@ public class SplashActivity extends Activity {
         }
         SplashActivity.this.startActivity(mainIntent);
         SplashActivity.this.finish();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 
     @Override

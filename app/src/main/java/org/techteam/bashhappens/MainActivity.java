@@ -27,8 +27,6 @@ import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.services.Constants;
 import org.techteam.bashhappens.services.IntentBuilder;
 
-import java.util.prefs.Preferences;
-
 public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
