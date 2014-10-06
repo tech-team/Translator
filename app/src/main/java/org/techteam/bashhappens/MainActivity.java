@@ -12,6 +12,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -236,6 +237,9 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     public void onShowLanguages(LangDirection direction) {
+        EditText textToTranslate = (EditText) findViewById(R.id.text_to_translate);
+        hideSoftKeyboard(textToTranslate);
+
         LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction, fromLanguage, toLanguage);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment)
@@ -264,5 +268,11 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 showToast(translation.getException());
             }
         }
+    }
+
+    private void hideSoftKeyboard(View view)
+    {
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 }
