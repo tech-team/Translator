@@ -3,6 +3,8 @@ package org.techteam.bashhappens.api;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class LanguageEntry implements Parcelable, Comparable<LanguageEntry> {
     private String name;
     private String uid;
@@ -54,5 +56,26 @@ public class LanguageEntry implements Parcelable, Comparable<LanguageEntry> {
     @Override
     public int compareTo(LanguageEntry languageEntry) {
         return this.getName().compareTo(languageEntry.getName());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof LanguageEntry)) {
+            return false;
+        }
+        else {
+            return (this.getName().equals(((LanguageEntry) obj).getName())
+                    && this.getUid().equals(((LanguageEntry) obj).getUid()));
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "{ " + getUid() + ": " + getName() + " }";
     }
 }

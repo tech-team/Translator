@@ -27,8 +27,6 @@ import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.services.Constants;
 import org.techteam.bashhappens.services.IntentBuilder;
 
-import java.util.prefs.Preferences;
-
 public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener {
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
@@ -238,7 +236,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     public void onShowLanguages(LangDirection direction) {
-        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
+        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction, fromLanguage, toLanguage);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment)
                 .addToBackStack(null)

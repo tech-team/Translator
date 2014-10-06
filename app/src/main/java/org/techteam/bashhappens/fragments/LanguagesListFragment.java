@@ -2,14 +2,11 @@ package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
@@ -27,17 +24,26 @@ import java.util.List;
 public class LanguagesListFragment extends Fragment {
     private static final String LANGUAGES_LIST_KEY = "languages_list";
     private static final String LANGUAGES_DIRECTION_KEY = "languages_direction";
-    private List<LanguageEntry> languages = new ArrayList<LanguageEntry>();
+    private LanguagesList languages = null;
     private LangDirection langDirection = null;
     private OnLanguageSelectedListener mCallback;
 
-    public static LanguagesListFragment getInstance(LanguagesList languagesList, LangDirection direction) {
-        LanguagesListFragment languagesListFragment = new LanguagesListFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(LANGUAGES_LIST_KEY, languagesList.getLanguages());
-        bundle.putString(LANGUAGES_DIRECTION_KEY, direction.toString());
-        languagesListFragment.setArguments(bundle);
-        return languagesListFragment;
+    private List<LanguageEntry> displayList = null;
+    private LanguageEntry fromLang = null;
+    private LanguageEntry toLang = null;
+
+    public static LanguagesListFragment getInstance(LanguagesList languagesList, LangDirection direction, LanguageEntry fromLang, LanguageEntry toLang) {
+        LanguagesListFragment f = new LanguagesListFragment();
+        f.languages = languagesList;
+        f.langDirection = direction;
+        f.fromLang = fromLang;
+        f.toLang = toLang;
+
+//        Bundle bundle = new Bundle();
+//        bundle.putParcelableArrayList(LANGUAGES_LIST_KEY, languagesList.getFr);
+//        bundle.putString(LANGUAGES_DIRECTION_KEY, direction.toString());
+//        languagesListFragment.setArguments(bundle);
+        return f;
     }
 
     public LanguagesListFragment() {
@@ -83,11 +89,11 @@ public class LanguagesListFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Bundle args = getArguments();
-        if (args != null) {
-            languages = args.getParcelableArrayList(LANGUAGES_LIST_KEY);
-            langDirection = LangDirection.valueOf(args.getString(LANGUAGES_DIRECTION_KEY));
-        }
+//        Bundle args = getArguments();
+//        if (args != null) {
+//            languages = args.getParcelableArrayList(LANGUAGES_LIST_KEY);
+//            langDirection = LangDirection.valueOf(args.getString(LANGUAGES_DIRECTION_KEY));
+//        }
 
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.languages_list_layout);
         layout.setOnClickListener(new View.OnClickListener() {
@@ -98,11 +104,34 @@ public class LanguagesListFragment extends Fragment {
         });
 
         ListView list = (ListView) view.findViewById(R.id.languages_list);
-        list.setAdapter(new LanguageListAdapter(languages));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(list.getLayoutParams());
+        switch (langDirection) {
+            case FROM:
+                lp.gravity = Gravity.LEFT;
+//                if (toLang == null) {
+//                    displayList = languages.getFromLangs();
+//                } else {
+//                    displayList = languages.getFromLangs(toLang);
+//                }
+                break;
+            case TO:
+                lp.gravity = Gravity.RIGHT;
+//                if (fromLang == null) {
+//                    displayList = languages.getToLangs();
+//                } else {
+//                    displayList = languages.getToLangs(fromLang);
+//                }
+                break;
+        }
+
+        displayList = languages.getLanguages();
+
+        list.setLayoutParams(lp);
+        list.setAdapter(new LanguageListAdapter(displayList));
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                LanguageEntry entry = languages.get(position);
+                LanguageEntry entry = displayList.get(position);
                 mCallback.onLanguageSelected(entry, langDirection);
             }
         });
