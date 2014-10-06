@@ -4,7 +4,6 @@
     android:id="@+id/languages_list_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/lang_list_top_margin"
     android:paddingLeft="@dimen/lang_list_horizonal_margin"
     android:paddingRight="@dimen/lang_list_horizonal_margin"
     android:paddingBottom="@dimen/lang_list_bottom_margin"
@@ -16,7 +15,7 @@
         android:layout_width="@dimen/lang_list_width"
         android:layout_height="fill_parent"
         android:layout_gravity="left"
-        android:background="#ffe4e4e4"/>
+        android:background="@color/list_color"/>
 
 
 </LinearLayout>

@@ -3,9 +3,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="lang_list_horizonal_margin">20dp</dimen>
+    <dimen name="lang_list_horizonal_margin">10dp</dimen>
 
-    <dimen name="lang_list_top_margin">60dp</dimen>
     <dimen name="lang_list_bottom_margin">20dp</dimen>
     <dimen name="lang_list_width">200dp</dimen>
 </resources>

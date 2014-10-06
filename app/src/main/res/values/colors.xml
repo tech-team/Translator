@@ -2,5 +2,6 @@
 <resources>
 
     <color name="action_bar">#dddddd</color>
+    <color name="list_color">#ffe4e4e4</color>
 
 </resources>
