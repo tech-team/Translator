@@ -24,6 +24,7 @@
             android:id="@+id/language_from_button"
             android:layout_gravity="left|top"
             android:text="@string/from_langiage_placeholder"
+            android:singleLine="true"
             style="?android:attr/buttonStyle" />
 
         <ImageButton
@@ -42,6 +43,7 @@
             android:id="@+id/language_to_button"
             android:layout_gravity="right|top"
             android:text="@string/to_language_placeholder"
+            android:singleLine="true"
             style="?android:attr/buttonStyle" />
 
     </LinearLayout>
@@ -70,7 +72,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2" >
+        android:layout_weight="1" >
         <TextView
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
