@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,12 +79,19 @@ public class MainFragment extends Fragment implements TranslatorUI {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(NAME, "MainFragment.destroy");
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle savedInstancestate) {
+        super.onSaveInstanceState(savedInstancestate);
+
         savedInstancestate.putParcelable("fromLanguage", fromLanguage);
         savedInstancestate.putParcelable("toLanguage", toLanguage);
         savedInstancestate.putString("textToTranslate", textToTranslate.getText().toString().trim());
         savedInstancestate.putString("translatedText", translatedText.getText().toString().trim());
-        super.onSaveInstanceState(savedInstancestate);
     }
 
     @Override
@@ -141,6 +149,9 @@ public class MainFragment extends Fragment implements TranslatorUI {
                 swapLanguages();
             }
         });
+
+
+
     }
 
     private void showList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
@@ -149,13 +160,17 @@ public class MainFragment extends Fragment implements TranslatorUI {
     }
 
     public void setFromLanguage(LanguageEntry lang) {
-        fromLanguage = lang;
-        fromLanguageButton.setText(lang.getName());
+        if (lang != null) {
+            fromLanguage = lang;
+            fromLanguageButton.setText(lang.getName());
+        }
     }
 
     public void setToLanguage(LanguageEntry lang) {
-        toLanguage = lang;
-        toLanguageButton.setText(lang.getName());
+        if (lang != null) {
+            toLanguage = lang;
+            toLanguageButton.setText(lang.getName());
+        }
     }
 
     public LanguageEntry getFromLanguage() {

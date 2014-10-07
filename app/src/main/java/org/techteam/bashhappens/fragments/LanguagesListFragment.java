@@ -3,6 +3,8 @@ package org.techteam.bashhappens.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,11 @@ public class LanguagesListFragment extends Fragment {
     }
 
     public LanguagesListFragment() {
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstancestate) {
+        super.onSaveInstanceState(savedInstancestate);
     }
 
     @Override
@@ -89,12 +96,13 @@ public class LanguagesListFragment extends Fragment {
         });
 
         LinearLayout langChooser = (LinearLayout) getActivity().findViewById(R.id.language_chooser_panel);
+        langChooser.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         int height = langChooser.getMeasuredHeight();
 
         listLayout.setPadding(listLayout.getPaddingLeft(),
-                height,
-                listLayout.getPaddingRight(),
-                listLayout.getPaddingBottom());
+                              height,
+                              listLayout.getPaddingRight(),
+                              listLayout.getPaddingBottom());
 
         ListView list = (ListView) view.findViewById(R.id.languages_list);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(list.getLayoutParams());
@@ -116,7 +124,12 @@ public class LanguagesListFragment extends Fragment {
                 mCallback.onLanguageSelected(entry, langDirection);
             }
         });
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(NAME, "ListFragment.destroy");
     }
 
 
