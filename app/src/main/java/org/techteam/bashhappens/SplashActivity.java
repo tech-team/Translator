@@ -8,13 +8,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
-import org.techteam.bashhappens.services.Constants;
+import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.IntentBuilder;
 
 public class SplashActivity extends Activity {
     private LanguageListBroadcastReceiver languageListBroadcastReceiver;
-
-    private static final String LOG_TAG = SplashActivity.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +32,7 @@ public class SplashActivity extends Activity {
     private void registerBroadcastReceiver() {
         languageListBroadcastReceiver = new LanguageListBroadcastReceiver();
         IntentFilter languageListIntentFilter = new IntentFilter(
-                Constants.LANGUAGE_LIST_BROADCAST_ACTION);
+                BroadcastIntents.LANGUAGE_LIST_BROADCAST_ACTION);
         LocalBroadcastManager.getInstance(SplashActivity.this)
                 .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
     }

@@ -3,8 +3,6 @@ package org.techteam.bashhappens.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,17 +24,21 @@ import java.util.List;
 public class LanguagesListFragment extends Fragment {
     public static final String NAME = LanguagesListFragment.class.getName();
 
-    private static final String LANGUAGES_LIST_KEY = "languages_list";
-    private static final String LANGUAGES_DIRECTION_KEY = "languages_direction";
+    private abstract class BundleKeys {
+        public static final String LANGUAGES_LIST = "languages_list";
+        public static final String LANG_DIRECTION = "languages_direction";
+    }
+
     private ArrayList<LanguageEntry> languages = null;
     private LangDirection langDirection = null;
     private OnLanguageSelectedListener mCallback;
 
-    public static LanguagesListFragment getInstance(LanguagesList languagesList, LangDirection direction, LanguageEntry fromLang, LanguageEntry toLang) {
+
+    public static LanguagesListFragment getInstance(LanguagesList languagesList, LangDirection direction) {
         LanguagesListFragment f = new LanguagesListFragment();
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList(LANGUAGES_LIST_KEY, languagesList.getLanguages());
-        bundle.putString(LANGUAGES_DIRECTION_KEY, direction.toString());
+        bundle.putParcelableArrayList(BundleKeys.LANGUAGES_LIST, languagesList.getLanguages());
+        bundle.putString(BundleKeys.LANG_DIRECTION, direction.toString());
         f.setArguments(bundle);
         return f;
     }
@@ -44,19 +46,7 @@ public class LanguagesListFragment extends Fragment {
     public LanguagesListFragment() {
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstancestate) {
-        super.onSaveInstanceState(savedInstancestate);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
+    /************************** Lifecycle **************************/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,8 +73,8 @@ public class LanguagesListFragment extends Fragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            languages = args.getParcelableArrayList(LANGUAGES_LIST_KEY);
-            langDirection = LangDirection.valueOf(args.getString(LANGUAGES_DIRECTION_KEY));
+            languages = args.getParcelableArrayList(BundleKeys.LANGUAGES_LIST);
+            langDirection = LangDirection.valueOf(args.getString(BundleKeys.LANG_DIRECTION));
         }
 
         LinearLayout listLayout = (LinearLayout) view.findViewById(R.id.languages_list_layout);
@@ -126,11 +116,6 @@ public class LanguagesListFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(NAME, "ListFragment.destroy");
-    }
 
 
 

@@ -21,15 +21,15 @@ public class TranslationService extends IntentService {
         String lang = intent.getStringExtra("lang");
 
         HttpDownloader.Request request = API.REQUEST_BUILDER.translateRequest(text, lang);
-        Intent localIntent = new Intent(Constants.TRANSLATE_BROADCAST_ACTION);
+        Intent localIntent = new Intent(BroadcastIntents.TRANSLATE_BROADCAST_ACTION);
         try {
             String response = HttpDownloader.httpPost(request);
 
-            localIntent.putExtra("data", response);
+            localIntent.putExtra(ResponseKeys.DATA, response);
         }
         catch (IOException exc) {
-            localIntent.putExtra("data", (String)null)
-                       .putExtra("exception", exc.getMessage());
+            localIntent.putExtra(ResponseKeys.DATA, (String)null)
+                       .putExtra(ResponseKeys.ERROR, exc.getMessage());
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
