@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +46,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     private LanguageEntry fromLanguage;
     private LanguageEntry toLanguage;
+    private boolean instantTranslate = true;
 
     public MainFragment() {
         super();
@@ -96,6 +99,22 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
         translatedText = (TextView) view.findViewById(R.id.translated_text);
         textToTranslate = (EditText) view.findViewById(R.id.text_to_translate);
+        textToTranslate.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                translate();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         fromLanguageButton = (Button) view.findViewById(R.id.language_from_button);
         toLanguageButton = (Button) view.findViewById(R.id.language_to_button);
@@ -119,23 +138,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
         translateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String text = textToTranslate.getText().toString().trim();
-
-                if (fromLanguage == null) {
-                    Toaster.toast(getBaseContext(), R.string.from_language_not_selected);
-                } else if (toLanguage == null) {
-                    Toaster.toast(getBaseContext(), R.string.to_language_not_selected);
-                } else if (text.equals("")) {
-                    Toaster.toast(getBaseContext(), R.string.text_to_translate_not_filled);
-                } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
-                    Toaster.toast(getBaseContext(), R.string.text_is_too_long);
-                } else {
-                    if (translationIntent != null) {
-                        getActivity().stopService(translationIntent);
-                    }
-                    translationIntent = IntentBuilder.translateIntent(getActivity(), text, fromLanguage.getUid(), toLanguage.getUid());
-                    getActivity().startService(translationIntent);
-                }
+                translate();
             }
         });
 
@@ -154,18 +157,12 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     @Override
     public void setFromLanguage(LanguageEntry lang) {
-        if (lang != null) {
-            fromLanguage = lang;
-            fromLanguageButton.setText(lang.getName());
-        }
+        setFromLanguage(lang, instantTranslate);
     }
 
     @Override
     public void setToLanguage(LanguageEntry lang) {
-        if (lang != null) {
-            toLanguage = lang;
-            toLanguageButton.setText(lang.getName());
-        }
+        setToLanguage(lang, instantTranslate);
     }
 
     @Override
@@ -199,6 +196,47 @@ public class MainFragment extends Fragment implements TranslatorUI {
     }
 
     /************************** Private stuff **************************/
+    private void setFromLanguage(LanguageEntry lang, boolean instantTranslate) {
+        if (lang != null) {
+            fromLanguage = lang;
+            fromLanguageButton.setText(lang.getName());
+            if (instantTranslate) {
+                translate();
+            }
+        }
+    }
+    public void setToLanguage(LanguageEntry lang, boolean instantTranslate) {
+        if (lang != null) {
+            toLanguage = lang;
+            toLanguageButton.setText(lang.getName());
+            if (instantTranslate) {
+                translate();
+            }
+        }
+    }
+
+    private void translate() {
+        String text = textToTranslate.getText().toString().trim();
+
+        if (!text.equals("")) {
+            if (fromLanguage == null) {
+                Toaster.toast(getBaseContext(), R.string.from_language_not_selected);
+            } else if (toLanguage == null) {
+                Toaster.toast(getBaseContext(), R.string.to_language_not_selected);
+            } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
+                Toaster.toast(getBaseContext(), R.string.text_is_too_long);
+            } else {
+                if (translationIntent != null) {
+                    getActivity().stopService(translationIntent);
+                }
+                translationIntent = IntentBuilder.translateIntent(getActivity(), text, fromLanguage.getUid(), toLanguage.getUid());
+                getActivity().startService(translationIntent);
+            }
+        }
+        else {
+            translatedText.setText("");
+        }
+    }
 
     private Context getBaseContext() {
         return MainFragment.this.getActivity().getBaseContext();
@@ -213,8 +251,12 @@ public class MainFragment extends Fragment implements TranslatorUI {
         if (fromLanguage != null && toLanguage != null) {
             LanguageEntry temp = fromLanguage;
 
-            setFromLanguage(toLanguage);
-            setToLanguage(temp);
+            setFromLanguage(toLanguage, false);
+            setToLanguage(temp, false);
+
+            if (instantTranslate) {
+                translate();
+            }
         }
     }
 
@@ -222,8 +264,6 @@ public class MainFragment extends Fragment implements TranslatorUI {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
-
-
 
 
 
