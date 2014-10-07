@@ -59,15 +59,23 @@ public class LanguageEntry implements Parcelable, Comparable<LanguageEntry> {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof LanguageEntry)) {
-            return false;
-        }
-        else {
-            LanguageEntry langObj = (LanguageEntry) obj;
-            return this.getName().equals(langObj.getName())
-                    && this.getUid().equals(langObj.getUid());
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LanguageEntry)) return false;
+
+        LanguageEntry that = (LanguageEntry) o;
+
+        if (!name.equals(that.name)) return false;
+        if (!uid.equals(that.uid)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + uid.hashCode();
+        return result;
     }
 
     @Override

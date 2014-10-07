@@ -2,6 +2,7 @@ package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +26,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
     public static final String NAME = MainFragment.class.getName();
 
     private OnShowLanguagesListListener mCallback;
+    private Intent translationIntent = null;
 
     private TextView translatedText;
     private EditText textToTranslate;
@@ -124,7 +126,11 @@ public class MainFragment extends Fragment implements TranslatorUI {
                 } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
                     showToast(getString(R.string.text_is_too_long));
                 } else {
-                    getActivity().startService(IntentBuilder.translateIntent(getActivity(), text, fromLanguage.getUid(), toLanguage.getUid()));
+                    if (translationIntent != null) {
+                        getActivity().stopService(translationIntent);
+                    }
+                    translationIntent = IntentBuilder.translateIntent(getActivity(), text, fromLanguage.getUid(), toLanguage.getUid());
+                    getActivity().startService(translationIntent);
                 }
             }
         });
