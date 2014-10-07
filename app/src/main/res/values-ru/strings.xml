@@ -14,5 +14,8 @@
     <string name="to_language_not_selected">Целевой язык не указан</string>
     <string name="text_to_translate_not_filled">Нечего переводить</string>
     <string name="text_is_too_long">Слишком много букв</string>
+    <string name="pref_translate_on_the_fly">Переводить на лету</string>
+    <string name="pref_translate_on_the_fly_summ">Переводить при наборе</string>
+    <string name="pref_main_title">Основные</string>
 
 </resources>

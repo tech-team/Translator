@@ -3,8 +3,10 @@ package org.techteam.bashhappens.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.preference.PreferenceManager;
+import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import org.techteam.bashhappens.MainActivity;
 import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
@@ -23,7 +26,8 @@ import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.util.Toaster;
 
-public class MainFragment extends Fragment implements TranslatorUI {
+public class MainFragment extends Fragment
+        implements TranslatorUI, SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String NAME = MainFragment.class.getName();
 
     private abstract class BundleKeys {
@@ -46,7 +50,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     private LanguageEntry fromLanguage;
     private LanguageEntry toLanguage;
-    private boolean instantTranslate = true;
+    private boolean translateOnTheFly = true;
 
     public MainFragment() {
         super();
@@ -99,6 +103,12 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
         translatedText = (TextView) view.findViewById(R.id.translated_text);
         textToTranslate = (EditText) view.findViewById(R.id.text_to_translate);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        sharedPref.registerOnSharedPreferenceChangeListener(this);
+
+        translateOnTheFly = sharedPref.getBoolean(getString(R.string.pref_translate_on_the_fly_key), true);
+
         textToTranslate.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -107,7 +117,8 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                translate();
+                if (MainFragment.this.translateOnTheFly)
+                    translate();
             }
 
             @Override
@@ -153,16 +164,25 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        //TODO: where we should unregister? here?
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        sharedPref.registerOnSharedPreferenceChangeListener(this);
+    }
+
     /************************** TranslateUI  **************************/
 
     @Override
     public void setFromLanguage(LanguageEntry lang) {
-        setFromLanguage(lang, instantTranslate);
+        setFromLanguage(lang, translateOnTheFly);
     }
 
     @Override
     public void setToLanguage(LanguageEntry lang) {
-        setToLanguage(lang, instantTranslate);
+        setToLanguage(lang, translateOnTheFly);
     }
 
     @Override
@@ -205,11 +225,11 @@ public class MainFragment extends Fragment implements TranslatorUI {
             }
         }
     }
-    public void setToLanguage(LanguageEntry lang, boolean instantTranslate) {
+    public void setToLanguage(LanguageEntry lang, boolean translateOnTheFly) {
         if (lang != null) {
             toLanguage = lang;
             toLanguageButton.setText(lang.getName());
-            if (instantTranslate) {
+            if (translateOnTheFly) {
                 translate();
             }
         }
@@ -254,7 +274,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
             setFromLanguage(toLanguage, false);
             setToLanguage(temp, false);
 
-            if (instantTranslate) {
+            if (translateOnTheFly) {
                 translate();
             }
         }
@@ -269,5 +289,14 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     public interface OnShowLanguagesListListener {
         void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        String expectedKey = getString(R.string.pref_translate_on_the_fly_key);
+
+        if (key.equals(expectedKey)) {
+            translateOnTheFly = sharedPreferences.getBoolean(expectedKey, true);
+        }
     }
 }

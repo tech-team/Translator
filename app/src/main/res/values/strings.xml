@@ -15,5 +15,9 @@
     <string name="text_to_translate_not_filled">Text to translate not filled</string>
     <string name="text_is_too_long">Input text is too long</string>
     <string name="main_fragment_tag">MainFragment</string>
+    <string name="pref_translate_on_the_fly">Translate on-the-fly</string>
+    <string name="pref_translate_on_the_fly_summ">Translate when typing</string>
+    <string name="pref_main_title">Basic</string>
+    <string name="pref_translate_on_the_fly_key">pref_translate_on_the_fly</string>
 
 </resources>

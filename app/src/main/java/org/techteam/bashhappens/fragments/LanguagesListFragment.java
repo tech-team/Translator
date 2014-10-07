@@ -2,7 +2,7 @@ package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,7 +81,7 @@ public class LanguagesListFragment extends Fragment {
         listLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().getSupportFragmentManager().popBackStack();
+                getActivity().getFragmentManager().popBackStack();
             }
         });
 

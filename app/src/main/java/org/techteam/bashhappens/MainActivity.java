@@ -1,13 +1,14 @@
 package org.techteam.bashhappens;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,12 +20,16 @@ import org.techteam.bashhappens.api.TranslateErrors;
 import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.fragments.MainFragment;
+import org.techteam.bashhappens.fragments.SettingsFragment;
 import org.techteam.bashhappens.fragments.TranslatorUI;
 import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.ResponseKeys;
 import org.techteam.bashhappens.util.Toaster;
 
-public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener, MainFragment.OnShowLanguagesListListener {
+public class MainActivity extends Activity
+    implements
+        LanguagesListFragment.OnLanguageSelectedListener,
+        MainFragment.OnShowLanguagesListListener {
 
     private abstract class PrefsKeys {
         public static final String FROM_LANGUAGE_NAME = "fromLanguageName";
@@ -43,6 +48,10 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
         registerBroadcastReceiver();
 
         String languageListData = getIntent().getStringExtra(ResponseKeys.DATA);
@@ -53,7 +62,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 return;
             }
 
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, new MainFragment(), MainFragment.NAME)
                     .commit();
         }
@@ -114,7 +123,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     private TranslatorUI getTranslatorUIFragment() {
 
         // TODO: check for ClassCast
-        return (TranslatorUI) getSupportFragmentManager().findFragmentByTag(MainFragment.NAME);
+        return (TranslatorUI) getFragmentManager().findFragmentByTag(MainFragment.NAME);
     }
 
     private void registerBroadcastReceiver() {
@@ -145,14 +154,19 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
         switch (id) {
             case R.id.action_settings:
-                Toaster.toast(MainActivity.this.getBaseContext(), R.string.action_settings);
+                showSettings();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-
+    private void showSettings() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new SettingsFragment())
+                .addToBackStack(null) //TODO: settings class name
+                .commit();
+    }
 
     /************************** Callbacks **************************/
 
@@ -169,14 +183,14 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 break;
         }
 
-        getSupportFragmentManager().popBackStack();
+        getFragmentManager().popBackStack();
     }
 
 
     @Override
     public void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
         LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
-        getSupportFragmentManager().beginTransaction()
+        getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment, LanguagesListFragment.NAME)
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -198,7 +212,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
                 if (translation.getCode() != TranslateErrors.ERR_OK) {
                     Toaster.toast(MainActivity.this.getBaseContext(),
-                                  TranslateErrors.getErrorMessage(translation.getCode()));
+                            TranslateErrors.getErrorMessage(translation.getCode()));
                 } else {
                     getTranslatorUIFragment().setTranslatedText(translation.getText());
                 }
@@ -207,7 +221,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 String exception = intent.getStringExtra(ResponseKeys.ERROR);
                 Translation translation = new Translation(exception);
                 Toaster.toastLong(MainActivity.this.getBaseContext(),
-                                translation.getException());
+                        translation.getException());
             }
         }
     }
