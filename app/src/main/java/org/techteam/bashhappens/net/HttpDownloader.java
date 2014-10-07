@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -23,6 +24,7 @@ public class HttpDownloader {
         private String url;
         private List<UrlParams> params;
         private List<Header> headers;
+
 
         public Request(String url, List<UrlParams> params, List<Header> headers) {
             this.url = url;
