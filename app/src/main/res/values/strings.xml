@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Translator</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="unable_to_load_lang_list">Unable to load languages list!</string>
     <string name="action_settings">Settings</string>
     <string name="splash_text">Loading language list…</string>
     <string name="from_language_placeholder">From</string>

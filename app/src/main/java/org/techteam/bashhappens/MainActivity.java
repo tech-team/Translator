@@ -107,7 +107,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
         switch (id) {
             case R.id.action_settings:
-                showToast("Settings");
+                showToast(getString(R.string.action_settings));
                 break;
         }
 

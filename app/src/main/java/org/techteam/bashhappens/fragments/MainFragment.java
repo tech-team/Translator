@@ -178,7 +178,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     @Override
     public void disableControls() {
-        showToast("Couldn't load languages list", true);
+        showToast(getString(R.string.unable_to_load_lang_list), true);
         translatedText.setEnabled(false);
         textToTranslate.setEnabled(false);
         fromLanguageButton.setEnabled(false);

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Толмачъ</string>
+    <string name="unable_to_load_lang_list">Не удалось загрузить список языков!</string>
+    <string name="action_settings">Настройки</string>
+    <string name="splash_text">Загрузка списка языков…</string>
+    <string name="from_language_placeholder">С</string>
+    <string name="to_language_placeholder">На</string>
+    <string name="button_translate">Перевести</string>
+    <string name="text_to_translate_hint">Введите текст для перевода…</string>
+    <string name="swap_button_desc">Обменять языки</string>
+    <string name="from_language_not_selected">Исходный язык не указан</string>
+    <string name="to_language_not_selected">Целевой язык не указан</string>
+    <string name="text_to_translate_not_filled">Нечего переводить</string>
+    <string name="text_is_too_long">Слишком много букв</string>
+
+</resources>
