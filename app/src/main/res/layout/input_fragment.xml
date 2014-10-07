@@ -74,6 +74,7 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textIsSelectable="true"
             android:id="@+id/translated_text"
             android:padding="12dp" />
     </ScrollView>
