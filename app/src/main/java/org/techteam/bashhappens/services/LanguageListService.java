@@ -11,8 +11,10 @@ import java.io.IOException;
 
 public class LanguageListService extends IntentService {
 
+    private static final String NAME = LanguageListService.class.getName();
+
     public LanguageListService() {
-        super("LanguageListService");
+        super(NAME);
     }
 
     @Override
@@ -20,15 +22,15 @@ public class LanguageListService extends IntentService {
         String ui = intent.getStringExtra("ui");
 
         HttpDownloader.Request request = API.REQUEST_BUILDER.getLangsRequest(ui);
-        Intent localIntent = new Intent(Constants.LANGUAGE_LIST_BROADCAST_ACTION);
+        Intent localIntent = new Intent(BroadcastIntents.LANGUAGE_LIST_BROADCAST_ACTION);
         try {
             String response = HttpDownloader.httpGet(request);
 
-            localIntent.putExtra("data", response);
+            localIntent.putExtra(ResponseKeys.DATA, response);
         }
         catch (IOException exc) {
-            localIntent.putExtra("data", (String) null)
-                       .putExtra("exception", exc.getMessage());
+            localIntent.putExtra(ResponseKeys.DATA, (String) null)
+                       .putExtra(ResponseKeys.ERROR, exc.getMessage());
         }
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);

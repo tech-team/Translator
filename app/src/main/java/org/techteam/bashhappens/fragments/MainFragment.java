@@ -3,10 +3,8 @@ package org.techteam.bashhappens.fragments;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +13,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.services.IntentBuilder;
+import org.techteam.bashhappens.util.Toaster;
 
 public class MainFragment extends Fragment implements TranslatorUI {
     public static final String NAME = MainFragment.class.getName();
+
+    private abstract class BundleKeys {
+        public static final String FROM_LANGUAGE = "fromLanguage";
+        public static final String TO_LANGUAGE = "toLanguage";
+        public static final String TEXT_TO_TRANSLATE = "textToTranslate";
+        public static final String TRANSLATED_TEXT = "translatedText";
+    }
 
     private OnShowLanguagesListListener mCallback;
     private Intent translationIntent = null;
@@ -44,10 +49,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
         super();
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+    /************************** Lifecycle **************************/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,10 +61,10 @@ public class MainFragment extends Fragment implements TranslatorUI {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            setFromLanguage((LanguageEntry) savedInstanceState.getParcelable("fromLanguage"));
-            setToLanguage((LanguageEntry) savedInstanceState.getParcelable("toLanguage"));
-            setTextToTranslate(savedInstanceState.getString("textToTranslate"));
-            setTranslatedText(savedInstanceState.getString("translatedText"));
+            setFromLanguage((LanguageEntry) savedInstanceState.getParcelable(BundleKeys.FROM_LANGUAGE));
+            setToLanguage((LanguageEntry) savedInstanceState.getParcelable(BundleKeys.TO_LANGUAGE));
+            setTextToTranslate(savedInstanceState.getString(BundleKeys.TEXT_TO_TRANSLATE));
+            setTranslatedText(savedInstanceState.getString(BundleKeys.TRANSLATED_TEXT));
         }
     }
 
@@ -79,19 +81,13 @@ public class MainFragment extends Fragment implements TranslatorUI {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(NAME, "MainFragment.destroy");
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle savedInstancestate) {
         super.onSaveInstanceState(savedInstancestate);
 
-        savedInstancestate.putParcelable("fromLanguage", fromLanguage);
-        savedInstancestate.putParcelable("toLanguage", toLanguage);
-        savedInstancestate.putString("textToTranslate", textToTranslate.getText().toString().trim());
-        savedInstancestate.putString("translatedText", translatedText.getText().toString().trim());
+        savedInstancestate.putParcelable(BundleKeys.FROM_LANGUAGE, fromLanguage);
+        savedInstancestate.putParcelable(BundleKeys.TO_LANGUAGE, toLanguage);
+        savedInstancestate.putString(BundleKeys.TEXT_TO_TRANSLATE, textToTranslate.getText().toString().trim());
+        savedInstancestate.putString(BundleKeys.TRANSLATED_TEXT, translatedText.getText().toString().trim());
     }
 
     @Override
@@ -126,13 +122,13 @@ public class MainFragment extends Fragment implements TranslatorUI {
                 String text = textToTranslate.getText().toString().trim();
 
                 if (fromLanguage == null) {
-                    showToast(getString(R.string.from_language_not_selected));
+                    Toaster.toast(getBaseContext(), R.string.from_language_not_selected);
                 } else if (toLanguage == null) {
-                    showToast(getString(R.string.to_language_not_selected));
+                    Toaster.toast(getBaseContext(), R.string.to_language_not_selected);
                 } else if (text.equals("")) {
-                    showToast(getString(R.string.text_to_translate_not_filled));
+                    Toaster.toast(getBaseContext(), R.string.text_to_translate_not_filled);
                 } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
-                    showToast(getString(R.string.text_is_too_long));
+                    Toaster.toast(getBaseContext(), R.string.text_is_too_long);
                 } else {
                     if (translationIntent != null) {
                         getActivity().stopService(translationIntent);
@@ -154,11 +150,9 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     }
 
-    private void showList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
-        hideSoftKeyboard(textToTranslate);
-        mCallback.onShowList(direction, fromLanguage, toLanguage);
-    }
+    /************************** TranslateUI  **************************/
 
+    @Override
     public void setFromLanguage(LanguageEntry lang) {
         if (lang != null) {
             fromLanguage = lang;
@@ -166,6 +160,7 @@ public class MainFragment extends Fragment implements TranslatorUI {
         }
     }
 
+    @Override
     public void setToLanguage(LanguageEntry lang) {
         if (lang != null) {
             toLanguage = lang;
@@ -173,10 +168,12 @@ public class MainFragment extends Fragment implements TranslatorUI {
         }
     }
 
+    @Override
     public LanguageEntry getFromLanguage() {
         return fromLanguage;
     }
 
+    @Override
     public LanguageEntry getToLanguage() {
         return toLanguage;
     }
@@ -193,13 +190,23 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
     @Override
     public void disableControls() {
-        showToast(getString(R.string.unable_to_load_lang_list), true);
         translatedText.setEnabled(false);
         textToTranslate.setEnabled(false);
         fromLanguageButton.setEnabled(false);
         toLanguageButton.setEnabled(false);
         translateButton.setEnabled(false);
         swapLanguagesButton.setEnabled(false);
+    }
+
+    /************************** Private stuff **************************/
+
+    private Context getBaseContext() {
+        return MainFragment.this.getActivity().getBaseContext();
+    }
+
+    private void showList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
+        hideSoftKeyboard(textToTranslate);
+        mCallback.onShowList(direction, fromLanguage, toLanguage);
     }
 
     private void swapLanguages() {
@@ -211,7 +218,6 @@ public class MainFragment extends Fragment implements TranslatorUI {
         }
     }
 
-
     private void hideSoftKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
@@ -219,19 +225,6 @@ public class MainFragment extends Fragment implements TranslatorUI {
 
 
 
-
-    private void showToast(String message) {
-        showToast(message, false);
-    }
-
-    private void showToast(String message, boolean longToast) {
-        int length = longToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
-        Toast.makeText(
-                MainFragment.this.getActivity().getBaseContext(),
-                message,
-                length)
-                .show();
-    }
 
 
     public interface OnShowLanguagesListListener {

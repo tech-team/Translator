@@ -6,36 +6,46 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
-import org.techteam.bashhappens.api.TranslateErrors;
-import org.techteam.bashhappens.fragments.TranslatorUI;
-import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.api.LanguagesList;
+import org.techteam.bashhappens.api.TranslateErrors;
 import org.techteam.bashhappens.api.Translation;
+import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.fragments.MainFragment;
-import org.techteam.bashhappens.services.Constants;
+import org.techteam.bashhappens.fragments.TranslatorUI;
+import org.techteam.bashhappens.services.BroadcastIntents;
+import org.techteam.bashhappens.services.ResponseKeys;
+import org.techteam.bashhappens.util.Toaster;
 
 public class MainActivity extends FragmentActivity implements LanguagesListFragment.OnLanguageSelectedListener, MainFragment.OnShowLanguagesListListener {
 
+    private abstract class PrefsKeys {
+        public static final String FROM_LANGUAGE_NAME = "fromLanguageName";
+        public static final String FROM_LANGUAGE_UID = "fromLanguageUid";
+        public static final String TO_LANGUAGE_NAME = "toLanguageName";
+        public static final String TO_LANGUAGE_UID = "toLanguageUid";
+    }
+
     private TranslationBroadcastReceiver translationBroadcastReceiver;
     private LanguagesList languagesList;
+
+    /************************** Lifecycle **************************/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String languageListData = getIntent().getStringExtra("data");
+        registerBroadcastReceiver();
+
+        String languageListData = getIntent().getStringExtra(ResponseKeys.DATA);
         languagesList = LanguagesList.fromJsonString(languageListData);
 
         if (findViewById(R.id.fragment_container) != null) {
@@ -50,34 +60,56 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        registerBroadcastReceiver();
 
         TranslatorUI f = getTranslatorUIFragment();
 
         if (languagesList == null || languagesList.getLanguages().size() < 2) {
+            Toaster.toastLong(MainActivity.this.getBaseContext(), R.string.unable_to_load_lang_list);
             f.disableControls();
         } else {
             SharedPreferences prefs = getPreferences(0);
 
-            f.setFromLanguage(new LanguageEntry(prefs.getString("fromLanguageName", languagesList.getLanguages().get(0).getName()),
-                    prefs.getString("fromLanguageUid", languagesList.getLanguages().get(0).getUid())));
-            f.setToLanguage(new LanguageEntry(prefs.getString("toLanguageName", languagesList.getLanguages().get(1).getName()),
-                    prefs.getString("toLanguageUid", languagesList.getLanguages().get(1).getUid())));
-
+            f.setFromLanguage(new LanguageEntry(prefs.getString(PrefsKeys.FROM_LANGUAGE_NAME, languagesList.getLanguages().get(0).getName()),
+                    prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid())));
+            f.setToLanguage(new LanguageEntry(prefs.getString(PrefsKeys.TO_LANGUAGE_NAME, languagesList.getLanguages().get(1).getName()),
+                    prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid())));
         }
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
+    public void onPause() {
+        super.onPause();
+
+        TranslatorUI f = getTranslatorUIFragment();
+
+        SharedPreferences prefs = getPreferences(0);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        LanguageEntry fromLang = f.getFromLanguage();
+        LanguageEntry toLang = f.getToLanguage();
+
+        if (fromLang != null) {
+            editor.putString(PrefsKeys.FROM_LANGUAGE_UID, fromLang.getUid());
+            editor.putString(PrefsKeys.FROM_LANGUAGE_NAME, fromLang.getName());
+        }
+        if (toLang != null) {
+            editor.putString(PrefsKeys.TO_LANGUAGE_UID, toLang.getUid());
+            editor.putString(PrefsKeys.TO_LANGUAGE_NAME, toLang.getName());
+        }
+        editor.apply();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        LocalBroadcastManager.getInstance(MainActivity.this)
+                .unregisterReceiver(translationBroadcastReceiver);
+    }
+
+    /************************** Private stuff **************************/
 
     private TranslatorUI getTranslatorUIFragment() {
 
@@ -85,28 +117,17 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
         return (TranslatorUI) getSupportFragmentManager().findFragmentByTag(MainFragment.NAME);
     }
 
-    private void showToast(String message) {
-        showToast(message, false);
-    }
-
-    private void showToast(String message, boolean longToast) {
-        int length = longToast ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
-        Toast.makeText(
-                this.getBaseContext(),
-                message,
-                length)
-                .show();
-    }
-
     private void registerBroadcastReceiver() {
         if (translationBroadcastReceiver == null) {
             IntentFilter translationIntentFilter = new IntentFilter(
-                    Constants.TRANSLATE_BROADCAST_ACTION);
+                    BroadcastIntents.TRANSLATE_BROADCAST_ACTION);
             translationBroadcastReceiver = new TranslationBroadcastReceiver();
             LocalBroadcastManager.getInstance(MainActivity.this)
                     .registerReceiver(translationBroadcastReceiver, translationIntentFilter);
         }
     }
+
+    /************************** Menu **************************/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -124,49 +145,16 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
         switch (id) {
             case R.id.action_settings:
-                showToast(getString(R.string.action_settings));
+                Toaster.toast(MainActivity.this.getBaseContext(), R.string.action_settings);
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle savedInstancestate) {
-        super.onSaveInstanceState(savedInstancestate);
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
 
-        TranslatorUI f = getTranslatorUIFragment();
-
-        SharedPreferences prefs = getPreferences(0);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        LanguageEntry fromLang = f.getFromLanguage();
-        LanguageEntry toLang = f.getToLanguage();
-
-        if (fromLang != null) {
-            editor.putString("fromLanguageUid", fromLang.getUid());
-            editor.putString("fromLanguageName", fromLang.getName());
-        }
-        if (toLang != null) {
-            editor.putString("toLanguageUid", toLang.getUid());
-            editor.putString("toLanguageName", toLang.getName());
-        }
-        editor.apply();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d("Activity", "Activity.destroy");
-
-        LocalBroadcastManager.getInstance(MainActivity.this)
-                .unregisterReceiver(translationBroadcastReceiver);
-    }
+    /************************** Callbacks **************************/
 
     @Override
     public void onLanguageSelected(LanguageEntry entry, LangDirection direction) {
@@ -187,7 +175,7 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
 
     @Override
     public void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
-        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction, fromLanguage, toLanguage);
+        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, listFragment, LanguagesListFragment.NAME)
                 .addToBackStack(null)
@@ -195,24 +183,31 @@ public class MainActivity extends FragmentActivity implements LanguagesListFragm
                 .commit();
     }
 
+
+
+
+
+
     private final class TranslationBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            String data = intent.getStringExtra("data");
+            String data = intent.getStringExtra(ResponseKeys.DATA);
             if (data != null) {
                 Translation translation = Translation.fromJsonString(data);
 
                 if (translation.getCode() != TranslateErrors.ERR_OK) {
-                    showToast(TranslateErrors.getErrorMessage(translation.getCode()));
+                    Toaster.toast(MainActivity.this.getBaseContext(),
+                                  TranslateErrors.getErrorMessage(translation.getCode()));
                 } else {
                     getTranslatorUIFragment().setTranslatedText(translation.getText());
                 }
             }
             else {
-                String exception = intent.getStringExtra("exception");
+                String exception = intent.getStringExtra(ResponseKeys.ERROR);
                 Translation translation = new Translation(exception);
-                showToast(translation.getException());
+                Toaster.toastLong(MainActivity.this.getBaseContext(),
+                                translation.getException());
             }
         }
     }

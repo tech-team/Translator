@@ -1,6 +1,6 @@
 package org.techteam.bashhappens.services;
 
-public final class Constants {
+public final class BroadcastIntents {
 
     public static final String TRANSLATE_BROADCAST_ACTION =
             "org.techteam.bashhappens.TRANSLATE_BROADCAST";
