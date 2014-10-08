@@ -22,6 +22,7 @@ import org.techteam.bashhappens.api.TranslateErrors;
 import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.fragments.MainFragment;
+import org.techteam.bashhappens.fragments.SplashFragment;
 import org.techteam.bashhappens.fragments.TranslatorUI;
 import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.IntentBuilder;
@@ -39,6 +40,7 @@ public class MainActivity extends Activity
         public static final String TO_LANGUAGE_UID = "toLanguageUid";
     }
 
+    private LanguageListBroadcastReceiver languageListBroadcastReceiver;
     private TranslationBroadcastReceiver translationBroadcastReceiver;
     private Intent translationIntent = null;
     private LanguagesList languagesList;
@@ -49,13 +51,12 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        //setContentView(R.layout.activity_main);
+
+        registerBroadcastReceivers();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        registerBroadcastReceiver();
 
         String languageListData = getIntent().getStringExtra(ResponseKeys.DATA);
         languagesList = LanguagesList.fromJsonString(languageListData);
@@ -66,7 +67,7 @@ public class MainActivity extends Activity
             }
 
             getFragmentManager().beginTransaction()
-                    .add(android.R.id.content, new MainFragment(), MainFragment.NAME)
+                    .add(android.R.id.content, new SplashFragment(), SplashFragment.NAME)
                     .commit();
         }
     }
@@ -119,19 +120,26 @@ public class MainActivity extends Activity
     public void onDestroy() {
         super.onDestroy();
 
+        unRegisterBroadcastReceivers();
+    }
+
+    private void unRegisterBroadcastReceivers() {
         LocalBroadcastManager.getInstance(MainActivity.this)
                 .unregisterReceiver(translationBroadcastReceiver);
+
+        LocalBroadcastManager.getInstance(MainActivity.this)
+                .unregisterReceiver(languageListBroadcastReceiver);
     }
 
     /************************** Private stuff **************************/
 
-    private TranslatorUI getTranslatorUIFragment() {
+    private void registerBroadcastReceivers() {
+        languageListBroadcastReceiver = new LanguageListBroadcastReceiver();
+        IntentFilter languageListIntentFilter = new IntentFilter(
+                BroadcastIntents.LANGUAGE_LIST_BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(MainActivity.this)
+                .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
 
-        // TODO: check for ClassCast
-        return (TranslatorUI) getFragmentManager().findFragmentByTag(MainFragment.NAME);
-    }
-
-    private void registerBroadcastReceiver() {
         if (translationBroadcastReceiver == null) {
             IntentFilter translationIntentFilter = new IntentFilter(
                     BroadcastIntents.TRANSLATE_BROADCAST_ACTION);
@@ -141,7 +149,11 @@ public class MainActivity extends Activity
         }
     }
 
+    private TranslatorUI getTranslatorUIFragment() {
 
+        // TODO: check for ClassCast
+        return (TranslatorUI) getFragmentManager().findFragmentByTag(MainFragment.NAME);
+    }
 
     /************************** Menu **************************/
 
@@ -238,5 +250,21 @@ public class MainActivity extends Activity
                         translation.getException());
             }
         }
+    }
+
+
+    private final class LanguageListBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            onLanguageListFetched(intent.getExtras());
+        }
+    }
+
+    private void onLanguageListFetched(Bundle bundle) {
+        //TODO: hide splash
+
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new MainFragment(), MainFragment.NAME)
+                .commit();
     }
 }
