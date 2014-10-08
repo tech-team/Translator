@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.techteam.bashhappens.MainActivity;
@@ -36,17 +37,21 @@ public class MainFragment extends Fragment
         public static final String TO_LANGUAGE = "toLanguage";
         public static final String TEXT_TO_TRANSLATE = "textToTranslate";
         public static final String TRANSLATED_TEXT = "translatedText";
+        public static final String IS_TRANSLATING = "isTranslating";
     }
 
     private OnShowLanguagesListListener mCallback;
     private Intent translationIntent = null;
 
+    private View translatedTextWrapper;
     private TextView translatedText;
     private EditText textToTranslate;
     private Button fromLanguageButton;
     private Button toLanguageButton;
     private Button translateButton;
     private ImageButton swapLanguagesButton;
+    private ProgressBar translateProgressBar;
+    boolean isTranslating = false;
 
 
     private LanguageEntry fromLanguage;
@@ -74,6 +79,10 @@ public class MainFragment extends Fragment
             setToLanguage((LanguageEntry) savedInstanceState.getParcelable(BundleKeys.TO_LANGUAGE));
             setTextToTranslate(savedInstanceState.getString(BundleKeys.TEXT_TO_TRANSLATE));
             setTranslatedText(savedInstanceState.getString(BundleKeys.TRANSLATED_TEXT));
+            isTranslating = savedInstanceState.getBoolean(BundleKeys.IS_TRANSLATING);
+        }
+        if (isTranslating) {
+            showProgress();
         }
     }
 
@@ -97,14 +106,18 @@ public class MainFragment extends Fragment
         outState.putParcelable(BundleKeys.TO_LANGUAGE, toLanguage);
         outState.putString(BundleKeys.TEXT_TO_TRANSLATE, textToTranslate.getText().toString().trim());
         outState.putString(BundleKeys.TRANSLATED_TEXT, translatedText.getText().toString().trim());
+        outState.putBoolean(BundleKeys.IS_TRANSLATING, isTranslating);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        translatedText = (TextView) view.findViewById(R.id.translated_text);
         textToTranslate = (EditText) view.findViewById(R.id.text_to_translate);
+        translatedText = (TextView) view.findViewById(R.id.translated_text);
+        translatedTextWrapper = view.findViewById(R.id.translated_text_wrapper);
+
+        translateProgressBar = (ProgressBar) view.findViewById(R.id.translate_progress);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
         sharedPref.registerOnSharedPreferenceChangeListener(this);
@@ -162,7 +175,6 @@ public class MainFragment extends Fragment
             }
         });
 
-
         setFromLanguage(fromLanguage, false);
         setToLanguage(toLanguage, false);
     }
@@ -205,6 +217,7 @@ public class MainFragment extends Fragment
 
     @Override
     public void setTranslatedText(String text) {
+        hideProgress();
         translatedText.setText(text);
     }
 
@@ -250,6 +263,7 @@ public class MainFragment extends Fragment
             } else if (text.length() >= Translation.MAX_INPUT_TEXT_LENGTH) {
                 Toaster.toast(getBaseContext(), R.string.text_is_too_long);
             } else {
+                showProgress();
                 if (translationIntent != null) {
                     getActivity().stopService(translationIntent);
                 }
@@ -282,6 +296,18 @@ public class MainFragment extends Fragment
                 translate();
             }
         }
+    }
+
+    private void showProgress() {
+        translatedTextWrapper.setVisibility(View.GONE);
+        translateProgressBar.setVisibility(View.VISIBLE);
+        isTranslating = true;
+    }
+
+    private void hideProgress() {
+        translatedTextWrapper.setVisibility(View.VISIBLE);
+        translateProgressBar.setVisibility(View.GONE);
+        isTranslating = false;
     }
 
 
