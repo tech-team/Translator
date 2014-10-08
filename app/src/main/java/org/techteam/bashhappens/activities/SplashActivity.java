@@ -12,29 +12,35 @@ import android.support.v4.content.LocalBroadcastManager;
 import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.IntentBuilder;
+import org.techteam.bashhappens.services.ServiceManager;
 
 import java.util.Locale;
 
 public class SplashActivity extends Activity {
     private LanguageListBroadcastReceiver languageListBroadcastReceiver;
+    private ServiceManager serviceManager = new ServiceManager(SplashActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_splash);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        registerBroadcastReceiver();
-
         String locale = Locale.getDefault().getLanguage();
-        startService(IntentBuilder.getLangsIntent(SplashActivity.this, locale));
+        serviceManager.startGetLangsService(locale);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        registerBroadcastReceiver();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterBroadcastReceivers();
     }
 
     private void registerBroadcastReceiver() {
@@ -45,6 +51,12 @@ public class SplashActivity extends Activity {
                 .registerReceiver(languageListBroadcastReceiver, languageListIntentFilter);
     }
 
+
+    private void unregisterBroadcastReceivers() {
+        LocalBroadcastManager.getInstance(SplashActivity.this)
+                .unregisterReceiver(languageListBroadcastReceiver);
+    }
+
     private void onListFetched(Bundle bundle) {
         Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
         for (String key: bundle.keySet()) {
@@ -52,18 +64,6 @@ public class SplashActivity extends Activity {
         }
         SplashActivity.this.startActivity(mainIntent);
         SplashActivity.this.finish();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        LocalBroadcastManager.getInstance(SplashActivity.this)
-                .unregisterReceiver(languageListBroadcastReceiver);
     }
 
     private final class LanguageListBroadcastReceiver extends BroadcastReceiver {

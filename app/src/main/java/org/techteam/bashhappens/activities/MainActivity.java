@@ -24,8 +24,8 @@ import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.fragments.MainFragment;
 import org.techteam.bashhappens.fragments.TranslatorUI;
 import org.techteam.bashhappens.services.BroadcastIntents;
-import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.services.ResponseKeys;
+import org.techteam.bashhappens.services.ServiceManager;
 import org.techteam.bashhappens.util.Toaster;
 
 public class MainActivity extends Activity
@@ -40,7 +40,7 @@ public class MainActivity extends Activity
     }
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
-    private Intent translationIntent = null;
+    private ServiceManager serviceManager = new ServiceManager(MainActivity.this);
     private LanguagesList languagesList;
 
     /************************** Lifecycle **************************/
@@ -49,13 +49,8 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        //setContentView(R.layout.activity_main);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        registerBroadcastReceiver();
 
         String languageListData = getIntent().getStringExtra(ResponseKeys.DATA);
         languagesList = LanguagesList.fromJsonString(languageListData);
@@ -74,52 +69,53 @@ public class MainActivity extends Activity
     @Override
     public void onResume() {
         super.onResume();
+        registerBroadcastReceivers();
 
         TranslatorUI f = getTranslatorUIFragment();
 
-        if (languagesList == null || languagesList.getLanguages().size() < 2) {
-            Toaster.toastLong(MainActivity.this.getBaseContext(), R.string.unable_to_load_lang_list);
-            f.disableControls();
+        if (f != null) {
+            if (languagesList == null || languagesList.getLanguages().size() < 2) {
+                Toaster.toastLong(MainActivity.this.getBaseContext(), R.string.unable_to_load_lang_list);
+                f.disableControls();
+            } else {
+                SharedPreferences prefs = getPreferences(0);
+
+                String fromUid = prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid());
+                String toUid = prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid());
+
+                LanguageEntry fromLang = new LanguageEntry(languagesList.getLanguageName(fromUid), fromUid);
+                LanguageEntry toLang = new LanguageEntry(languagesList.getLanguageName(toUid), toUid);
+
+                f.setLanguages(fromLang, toLang);
+            }
         } else {
-            SharedPreferences prefs = getPreferences(0);
-
-            String fromUid = prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid());
-            String toUid = prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid());
-
-            LanguageEntry fromLang = new LanguageEntry(languagesList.getLanguageName(fromUid), fromUid);
-            LanguageEntry toLang = new LanguageEntry(languagesList.getLanguageName(toUid), toUid);
-
-            f.setLanguages(fromLang, toLang);
+            Toaster.toastLong(getBaseContext(), R.string.unexpected_error);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        unregisterBroadcastReceivers();
 
         TranslatorUI f = getTranslatorUIFragment();
+        if (f != null) {
+            SharedPreferences prefs = getPreferences(0);
+            SharedPreferences.Editor editor = prefs.edit();
 
-        SharedPreferences prefs = getPreferences(0);
-        SharedPreferences.Editor editor = prefs.edit();
+            LanguageEntry fromLang = f.getFromLanguage();
+            LanguageEntry toLang = f.getToLanguage();
 
-        LanguageEntry fromLang = f.getFromLanguage();
-        LanguageEntry toLang = f.getToLanguage();
-
-        if (fromLang != null) {
-            editor.putString(PrefsKeys.FROM_LANGUAGE_UID, fromLang.getUid());
-        }
-        if (toLang != null) {
-            editor.putString(PrefsKeys.TO_LANGUAGE_UID, toLang.getUid());
-        }
-        editor.apply();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        LocalBroadcastManager.getInstance(MainActivity.this)
-                .unregisterReceiver(translationBroadcastReceiver);
+            if (fromLang != null) {
+                editor.putString(PrefsKeys.FROM_LANGUAGE_UID, fromLang.getUid());
+            }
+            if (toLang != null) {
+                editor.putString(PrefsKeys.TO_LANGUAGE_UID, toLang.getUid());
+            }
+            editor.apply();
+        } else {
+            Toaster.toastLong(getBaseContext(), R.string.unexpected_error);
+        }    
     }
 
     /************************** Private stuff **************************/
@@ -130,14 +126,17 @@ public class MainActivity extends Activity
         return (TranslatorUI) getFragmentManager().findFragmentByTag(MainFragment.NAME);
     }
 
-    private void registerBroadcastReceiver() {
-        if (translationBroadcastReceiver == null) {
-            IntentFilter translationIntentFilter = new IntentFilter(
-                    BroadcastIntents.TRANSLATE_BROADCAST_ACTION);
-            translationBroadcastReceiver = new TranslationBroadcastReceiver();
-            LocalBroadcastManager.getInstance(MainActivity.this)
-                    .registerReceiver(translationBroadcastReceiver, translationIntentFilter);
-        }
+    private void registerBroadcastReceivers() {
+        IntentFilter translationIntentFilter = new IntentFilter(
+                BroadcastIntents.TRANSLATE_BROADCAST_ACTION);
+        translationBroadcastReceiver = new TranslationBroadcastReceiver();
+        LocalBroadcastManager.getInstance(MainActivity.this)
+                .registerReceiver(translationBroadcastReceiver, translationIntentFilter);
+    }
+
+    private void unregisterBroadcastReceivers() {
+        LocalBroadcastManager.getInstance(MainActivity.this)
+                .unregisterReceiver(translationBroadcastReceiver);
     }
 
 
@@ -178,13 +177,17 @@ public class MainActivity extends Activity
     public void onLanguageSelected(LanguageEntry entry, LangDirection direction) {
         TranslatorUI f = getTranslatorUIFragment();
 
-        switch (direction) {
-            case FROM:
-                f.setFromLanguage(entry);
-                break;
-            case TO:
-                f.setToLanguage(entry);
-                break;
+        if (f != null) {
+            switch (direction) {
+                case FROM:
+                    f.setFromLanguage(entry);
+                    break;
+                case TO:
+                    f.setToLanguage(entry);
+                    break;
+            }
+        } else {
+            Toaster.toastLong(getBaseContext(), R.string.unexpected_error);
         }
 
         getFragmentManager().popBackStack();
@@ -203,11 +206,7 @@ public class MainActivity extends Activity
 
     @Override
     public void onTranslate(String text, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
-        if (translationIntent != null) {
-            stopService(translationIntent);
-        }
-        translationIntent = IntentBuilder.translateIntent(MainActivity.this, text, fromLanguage.getUid(), toLanguage.getUid());
-        startService(translationIntent);
+        serviceManager.startTranslationService(text, fromLanguage, toLanguage);
     }
 
 
@@ -227,7 +226,12 @@ public class MainActivity extends Activity
                     Toaster.toast(MainActivity.this.getBaseContext(),
                             TranslateErrors.getErrorMessage(translation.getCode()));
                 } else {
-                    getTranslatorUIFragment().setTranslatedText(translation.getText());
+                    TranslatorUI f = getTranslatorUIFragment();
+                    if (f != null) {
+                        f.setTranslatedText(translation.getText());
+                    } else {
+                        Toaster.toastLong(getBaseContext(), R.string.unexpected_error);
+                    }
                 }
             }
             else {

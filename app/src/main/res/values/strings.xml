@@ -20,5 +20,6 @@
     <string name="pref_main_title">Basic</string>
     <string name="pref_translate_on_the_fly_key">pref_translate_on_the_fly</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="unexpected_error">Unexpected error happened</string>
 
 </resources>
