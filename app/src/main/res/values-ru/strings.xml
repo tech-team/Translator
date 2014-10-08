@@ -17,5 +17,6 @@
     <string name="pref_translate_on_the_fly">Переводить на лету</string>
     <string name="pref_translate_on_the_fly_summ">Переводить при наборе</string>
     <string name="pref_main_title">Основные</string>
+    <string name="title_activity_settings">Настройки</string>
 
 </resources>

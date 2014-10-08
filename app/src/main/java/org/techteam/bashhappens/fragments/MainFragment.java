@@ -19,7 +19,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.techteam.bashhappens.MainActivity;
 import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
