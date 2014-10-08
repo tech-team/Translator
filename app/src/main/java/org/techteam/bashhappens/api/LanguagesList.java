@@ -17,6 +17,7 @@ public class LanguagesList extends ServerResponse {
     private Map<String, String> langsMap = new HashMap<String, String>();
     private ArrayList<LanguageEntry> langs = new ArrayList<LanguageEntry>();
     private Set<String> dirs = new HashSet<String>();
+    private String rawJson = null;
 
     public LanguagesList(String e) {
         setException(e);
@@ -34,6 +35,7 @@ public class LanguagesList extends ServerResponse {
         try {
             JSONObject obj = new JSONObject(json);
             LanguagesList languagesList = new LanguagesList();
+            languagesList.rawJson = json;
 
             JSONObject langs = obj.getJSONObject("langs");
             Iterator<?> keys = langs.keys();
@@ -70,6 +72,10 @@ public class LanguagesList extends ServerResponse {
     }
     public Set<String> getDirections() {
         return dirs;
+    }
+
+    public String getRawJson() {
+        return rawJson;
     }
 }
 

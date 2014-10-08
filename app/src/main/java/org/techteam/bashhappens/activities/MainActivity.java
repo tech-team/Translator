@@ -169,14 +169,7 @@ public class MainActivity extends Activity
     }
 
     private void showSettings() {
-//        Keyboard.hideSoftKeyboard(MainActivity.this, null); // TODO: need to hide keyboard somehow
-        /*getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragment(), SettingsFragment.NAME)
-                .addToBackStack(null)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();*/
-
-        Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(settingsIntent);
     }
 
