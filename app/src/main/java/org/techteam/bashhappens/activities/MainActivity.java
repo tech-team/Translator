@@ -12,8 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LangDirection;
@@ -23,15 +21,11 @@ import org.techteam.bashhappens.api.TranslateErrors;
 import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.fragments.LanguagesListFragment;
 import org.techteam.bashhappens.fragments.MainFragment;
-import org.techteam.bashhappens.fragments.SettingsFragment;
 import org.techteam.bashhappens.fragments.TranslatorUI;
 import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.services.ResponseKeys;
-import org.techteam.bashhappens.util.Keyboard;
 import org.techteam.bashhappens.util.Toaster;
-
-import java.util.Set;
 
 public class MainActivity extends Activity
     implements
@@ -55,7 +49,7 @@ public class MainActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
@@ -66,13 +60,13 @@ public class MainActivity extends Activity
         String languageListData = getIntent().getStringExtra(ResponseKeys.DATA);
         languagesList = LanguagesList.fromJsonString(languageListData);
 
-        if (findViewById(R.id.fragment_container) != null) {
+        if (findViewById(android.R.id.content) != null) {
             if (savedInstanceState != null) {
                 return;
             }
 
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new MainFragment(), MainFragment.NAME)
+                    .add(android.R.id.content, new MainFragment(), MainFragment.NAME)
                     .commit();
         }
     }
@@ -175,7 +169,7 @@ public class MainActivity extends Activity
     private void showSettings() {
 //        Keyboard.hideSoftKeyboard(MainActivity.this, null); // TODO: need to hide keyboard somehow
         /*getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new SettingsFragment(), SettingsFragment.NAME)
+                .replace(android.R.id.content, new SettingsFragment(), SettingsFragment.NAME)
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .commit();*/
@@ -207,7 +201,7 @@ public class MainActivity extends Activity
     public void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
         LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
         getFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, listFragment, LanguagesListFragment.NAME)
+                .add(android.R.id.content, listFragment, LanguagesListFragment.NAME)
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
