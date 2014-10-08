@@ -13,6 +13,8 @@ import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.IntentBuilder;
 
+import java.util.Locale;
+
 public class SplashActivity extends Activity {
     private LanguageListBroadcastReceiver languageListBroadcastReceiver;
 
@@ -26,7 +28,8 @@ public class SplashActivity extends Activity {
 
         registerBroadcastReceiver();
 
-        startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru")); //TODO: why so "ru"
+        String locale = Locale.getDefault().getLanguage();
+        startService(IntentBuilder.getLangsIntent(SplashActivity.this, locale));
     }
 
     @Override
