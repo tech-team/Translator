@@ -34,6 +34,9 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.techteam.bashhappens.activities.MainActivity" />
         </activity>
 
         <service
