@@ -24,6 +24,7 @@ import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.api.Translation;
 import org.techteam.bashhappens.services.IntentBuilder;
+import org.techteam.bashhappens.util.Keyboard;
 import org.techteam.bashhappens.util.Toaster;
 
 public class MainFragment extends Fragment
@@ -55,6 +56,7 @@ public class MainFragment extends Fragment
     public MainFragment() {
         super();
     }
+
 
     /************************** Lifecycle **************************/
 
@@ -88,13 +90,13 @@ public class MainFragment extends Fragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstancestate) {
-        super.onSaveInstanceState(savedInstancestate);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-        savedInstancestate.putParcelable(BundleKeys.FROM_LANGUAGE, fromLanguage);
-        savedInstancestate.putParcelable(BundleKeys.TO_LANGUAGE, toLanguage);
-        savedInstancestate.putString(BundleKeys.TEXT_TO_TRANSLATE, textToTranslate.getText().toString().trim());
-        savedInstancestate.putString(BundleKeys.TRANSLATED_TEXT, translatedText.getText().toString().trim());
+        outState.putParcelable(BundleKeys.FROM_LANGUAGE, fromLanguage);
+        outState.putParcelable(BundleKeys.TO_LANGUAGE, toLanguage);
+        outState.putString(BundleKeys.TEXT_TO_TRANSLATE, textToTranslate.getText().toString().trim());
+        outState.putString(BundleKeys.TRANSLATED_TEXT, translatedText.getText().toString().trim());
     }
 
     @Override
@@ -161,7 +163,8 @@ public class MainFragment extends Fragment
         });
 
 
-
+        setFromLanguage(fromLanguage, false);
+        setToLanguage(toLanguage, false);
     }
 
     @Override
@@ -216,6 +219,7 @@ public class MainFragment extends Fragment
     }
 
     /************************** Private stuff **************************/
+
     private void setFromLanguage(LanguageEntry lang, boolean instantTranslate) {
         if (lang != null) {
             fromLanguage = lang;
@@ -225,7 +229,7 @@ public class MainFragment extends Fragment
             }
         }
     }
-    public void setToLanguage(LanguageEntry lang, boolean translateOnTheFly) {
+    private void setToLanguage(LanguageEntry lang, boolean translateOnTheFly) {
         if (lang != null) {
             toLanguage = lang;
             toLanguageButton.setText(lang.getName());
@@ -263,7 +267,7 @@ public class MainFragment extends Fragment
     }
 
     private void showList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
-        hideSoftKeyboard(textToTranslate);
+        Keyboard.hideSoftKeyboard(getActivity(), textToTranslate);
         mCallback.onShowList(direction, fromLanguage, toLanguage);
     }
 
@@ -278,11 +282,6 @@ public class MainFragment extends Fragment
                 translate();
             }
         }
-    }
-
-    private void hideSoftKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
     }
 
 

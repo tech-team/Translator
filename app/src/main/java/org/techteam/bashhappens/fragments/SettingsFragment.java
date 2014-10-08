@@ -5,6 +5,8 @@ import android.preference.PreferenceFragment;
 import org.techteam.bashhappens.R;
 
 public class SettingsFragment extends PreferenceFragment {
+    public static final String NAME = SettingsFragment.class.getName();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
