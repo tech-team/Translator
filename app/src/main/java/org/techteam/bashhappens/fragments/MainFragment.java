@@ -42,14 +42,12 @@ public class MainFragment extends Fragment
     private OnShowLanguagesListListener mCallback;
     private Intent translationIntent = null;
 
-    private View translatedTextWrapper;
     private TextView translatedText;
     private EditText textToTranslate;
     private Button fromLanguageButton;
     private Button toLanguageButton;
     private Button translateButton;
     private ImageButton swapLanguagesButton;
-    private ProgressBar translateProgressBar;
     boolean isTranslating = false;
 
 
@@ -114,9 +112,6 @@ public class MainFragment extends Fragment
 
         textToTranslate = (EditText) view.findViewById(R.id.text_to_translate);
         translatedText = (TextView) view.findViewById(R.id.translated_text);
-        translatedTextWrapper = view.findViewById(R.id.translated_text_wrapper);
-
-        translateProgressBar = (ProgressBar) view.findViewById(R.id.translate_progress);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
         sharedPref.registerOnSharedPreferenceChangeListener(this);
@@ -298,14 +293,12 @@ public class MainFragment extends Fragment
     }
 
     private void showProgress() {
-        translatedTextWrapper.setVisibility(View.GONE);
-        translateProgressBar.setVisibility(View.VISIBLE);
+        getActivity().setProgressBarIndeterminateVisibility(true);
         isTranslating = true;
     }
 
     private void hideProgress() {
-        translatedTextWrapper.setVisibility(View.VISIBLE);
-        translateProgressBar.setVisibility(View.GONE);
+        getActivity().setProgressBarIndeterminateVisibility(false);
         isTranslating = false;
     }
 
