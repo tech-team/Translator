@@ -29,6 +29,8 @@ import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.services.ResponseKeys;
 import org.techteam.bashhappens.util.Toaster;
 
+import java.util.Locale;
+
 public class MainActivity extends Activity
     implements
         LanguagesListFragment.OnLanguageSelectedListener,
@@ -51,15 +53,9 @@ public class MainActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-
         registerBroadcastReceivers();
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        String languageListData = getIntent().getStringExtra(ResponseKeys.DATA);
-        languagesList = LanguagesList.fromJsonString(languageListData);
 
         if (findViewById(android.R.id.content) != null) {
             if (savedInstanceState != null) {
@@ -70,6 +66,9 @@ public class MainActivity extends Activity
                     .add(android.R.id.content, new SplashFragment(), SplashFragment.NAME)
                     .commit();
         }
+
+        String locale = Locale.getDefault().getLanguage();
+        startService(IntentBuilder.getLangsIntent(MainActivity.this, locale));
     }
 
     @Override
@@ -78,20 +77,22 @@ public class MainActivity extends Activity
 
         TranslatorUI f = getTranslatorUIFragment();
 
-        if (languagesList == null || languagesList.getLanguages().size() < 2) {
-            Toaster.toastLong(MainActivity.this.getBaseContext(), R.string.unable_to_load_lang_list);
-            f.disableControls();
-        } else {
-            SharedPreferences prefs = getPreferences(0);
+        if (f != null) {
+            if (languagesList == null || languagesList.getLanguages().size() < 2) {
+                Toaster.toastLong(MainActivity.this.getBaseContext(), R.string.unable_to_load_lang_list);
+                f.disableControls();
+            } else {
+                SharedPreferences prefs = getPreferences(0);
 
-            String fromUid = prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid());
-            String toUid = prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid());
+                String fromUid = prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid());
+                String toUid = prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid());
 
-            LanguageEntry fromLang = new LanguageEntry(languagesList.getLanguageName(fromUid), fromUid);
-            LanguageEntry toLang = new LanguageEntry(languagesList.getLanguageName(toUid), toUid);
+                LanguageEntry fromLang = new LanguageEntry(languagesList.getLanguageName(fromUid), fromUid);
+                LanguageEntry toLang = new LanguageEntry(languagesList.getLanguageName(toUid), toUid);
 
-            f.setFromLanguage(fromLang);
-            f.setToLanguage(toLang);
+                f.setFromLanguage(fromLang);
+                f.setToLanguage(toLang);
+            }
         }
     }
 
@@ -100,20 +101,21 @@ public class MainActivity extends Activity
         super.onPause();
 
         TranslatorUI f = getTranslatorUIFragment();
+        if (f != null) {
+            SharedPreferences prefs = getPreferences(0);
+            SharedPreferences.Editor editor = prefs.edit();
 
-        SharedPreferences prefs = getPreferences(0);
-        SharedPreferences.Editor editor = prefs.edit();
+            LanguageEntry fromLang = f.getFromLanguage();
+            LanguageEntry toLang = f.getToLanguage();
 
-        LanguageEntry fromLang = f.getFromLanguage();
-        LanguageEntry toLang = f.getToLanguage();
-
-        if (fromLang != null) {
-            editor.putString(PrefsKeys.FROM_LANGUAGE_UID, fromLang.getUid());
+            if (fromLang != null) {
+                editor.putString(PrefsKeys.FROM_LANGUAGE_UID, fromLang.getUid());
+            }
+            if (toLang != null) {
+                editor.putString(PrefsKeys.TO_LANGUAGE_UID, toLang.getUid());
+            }
+            editor.apply();
         }
-        if (toLang != null) {
-            editor.putString(PrefsKeys.TO_LANGUAGE_UID, toLang.getUid());
-        }
-        editor.apply();
     }
 
     @Override
@@ -266,5 +268,8 @@ public class MainActivity extends Activity
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new MainFragment(), MainFragment.NAME)
                 .commit();
+
+        String data = bundle.getString(ResponseKeys.DATA);
+        languagesList = LanguagesList.fromJsonString(data);
     }
 }
