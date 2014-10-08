@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 
 import org.techteam.bashhappens.R;
@@ -20,9 +21,12 @@ public class SplashActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_splash);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         registerBroadcastReceiver();
 
-        startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru"));
+        startService(IntentBuilder.getLangsIntent(SplashActivity.this, "ru")); //TODO: why so "ru"
     }
 
     @Override
