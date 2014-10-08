@@ -249,6 +249,12 @@ public class MainFragment extends Fragment
         }
     }
 
+    @Override
+    public void setLanguages(LanguageEntry fromLang, LanguageEntry toLang) {
+        setFromLanguage(fromLang, false);
+        setToLanguage(toLang, false);
+    }
+
     private void translate() {
         String text = textToTranslate.getText().toString().trim();
 

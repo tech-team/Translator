@@ -8,6 +8,7 @@ public interface TranslatorUI {
 
     void setFromLanguage(LanguageEntry lang);
     void setToLanguage(LanguageEntry lang);
+    void setLanguages(LanguageEntry fromLang, LanguageEntry toLang);
 
     void setTextToTranslate(String text);
     void setTranslatedText(String text);

@@ -89,8 +89,7 @@ public class MainActivity extends Activity
             LanguageEntry fromLang = new LanguageEntry(languagesList.getLanguageName(fromUid), fromUid);
             LanguageEntry toLang = new LanguageEntry(languagesList.getLanguageName(toUid), toUid);
 
-            f.setFromLanguage(fromLang);
-            f.setToLanguage(toLang);
+            f.setLanguages(fromLang, toLang);
         }
     }
 
