@@ -1,18 +1,16 @@
 package org.techteam.bashhappens.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -23,7 +21,6 @@ import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.api.Translation;
-import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.util.Keyboard;
 import org.techteam.bashhappens.util.Toaster;
 
@@ -39,8 +36,8 @@ public class MainFragment extends Fragment
         public static final String IS_TRANSLATING = "isTranslating";
     }
 
-    private OnShowLanguagesListListener mCallback;
-    private Intent translationIntent = null;
+    private OnShowLanguagesListListener showLangsCallback;
+    private OnTranslateListener translateCallback;
 
     private TextView translatedText;
     private EditText textToTranslate;
@@ -88,10 +85,17 @@ public class MainFragment extends Fragment
         super.onAttach(activity);
 
         try {
-            mCallback = (OnShowLanguagesListListener) activity;
+            showLangsCallback = (OnShowLanguagesListListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnItemSelectedListener");
+        }
+
+        try {
+            translateCallback = (OnTranslateListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnTranslateListener");
         }
     }
 
@@ -258,11 +262,7 @@ public class MainFragment extends Fragment
                 Toaster.toast(getBaseContext(), R.string.text_is_too_long);
             } else {
                 showProgress();
-                if (translationIntent != null) {
-                    getActivity().stopService(translationIntent);
-                }
-                translationIntent = IntentBuilder.translateIntent(getActivity(), text, fromLanguage.getUid(), toLanguage.getUid());
-                getActivity().startService(translationIntent);
+                translateCallback.onTranslate(text, fromLanguage, toLanguage);
             }
         }
         else {
@@ -276,7 +276,7 @@ public class MainFragment extends Fragment
 
     private void showList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
         Keyboard.hideSoftKeyboard(getActivity(), textToTranslate);
-        mCallback.onShowList(direction, fromLanguage, toLanguage);
+        showLangsCallback.onShowList(direction, fromLanguage, toLanguage);
     }
 
     private void swapLanguages() {
@@ -306,6 +306,10 @@ public class MainFragment extends Fragment
 
     public interface OnShowLanguagesListListener {
         void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage);
+    }
+
+    public interface OnTranslateListener {
+        void onTranslate(String text, LanguageEntry fromLanguage, LanguageEntry toLanguage);
     }
 
     @Override
