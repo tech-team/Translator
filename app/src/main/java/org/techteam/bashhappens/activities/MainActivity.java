@@ -26,6 +26,7 @@ import org.techteam.bashhappens.fragments.MainFragment;
 import org.techteam.bashhappens.fragments.SettingsFragment;
 import org.techteam.bashhappens.fragments.TranslatorUI;
 import org.techteam.bashhappens.services.BroadcastIntents;
+import org.techteam.bashhappens.services.IntentBuilder;
 import org.techteam.bashhappens.services.ResponseKeys;
 import org.techteam.bashhappens.util.Keyboard;
 import org.techteam.bashhappens.util.Toaster;
@@ -35,7 +36,8 @@ import java.util.Set;
 public class MainActivity extends Activity
     implements
         LanguagesListFragment.OnLanguageSelectedListener,
-        MainFragment.OnShowLanguagesListListener {
+        MainFragment.OnShowLanguagesListListener,
+        MainFragment.OnTranslateListener {
 
     private abstract class PrefsKeys {
         public static final String FROM_LANGUAGE_NAME = "fromLanguageName";
@@ -45,6 +47,7 @@ public class MainActivity extends Activity
     }
 
     private TranslationBroadcastReceiver translationBroadcastReceiver;
+    private Intent translationIntent = null;
     private LanguagesList languagesList;
 
     /************************** Lifecycle **************************/
@@ -208,6 +211,15 @@ public class MainActivity extends Activity
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
+    }
+
+    @Override
+    public void onTranslate(String text, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
+        if (translationIntent != null) {
+            stopService(translationIntent);
+        }
+        translationIntent = IntentBuilder.translateIntent(MainActivity.this, text, fromLanguage.getUid(), toLanguage.getUid());
+        startService(translationIntent);
     }
 
 
