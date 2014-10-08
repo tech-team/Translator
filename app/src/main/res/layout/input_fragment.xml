@@ -67,6 +67,7 @@
         style="?android:attr/buttonStyleInset" />
 
     <ScrollView
+        android:id="@+id/translated_text_wrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
@@ -78,5 +79,15 @@
             android:id="@+id/translated_text"
             android:padding="12dp" />
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/translate_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        style="@android:style/Widget.ProgressBar"
+        android:indeterminate="true"
+        android:visibility="gone" />
 
 </LinearLayout>
