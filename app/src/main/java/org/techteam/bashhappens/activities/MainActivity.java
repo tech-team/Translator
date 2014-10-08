@@ -35,9 +35,7 @@ public class MainActivity extends Activity
         MainFragment.OnTranslateListener {
 
     private abstract class PrefsKeys {
-        public static final String FROM_LANGUAGE_NAME = "fromLanguageName";
         public static final String FROM_LANGUAGE_UID = "fromLanguageUid";
-        public static final String TO_LANGUAGE_NAME = "toLanguageName";
         public static final String TO_LANGUAGE_UID = "toLanguageUid";
     }
 
@@ -85,10 +83,14 @@ public class MainActivity extends Activity
         } else {
             SharedPreferences prefs = getPreferences(0);
 
-            f.setFromLanguage(new LanguageEntry(prefs.getString(PrefsKeys.FROM_LANGUAGE_NAME, languagesList.getLanguages().get(0).getName()),
-                    prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid())));
-            f.setToLanguage(new LanguageEntry(prefs.getString(PrefsKeys.TO_LANGUAGE_NAME, languagesList.getLanguages().get(1).getName()),
-                    prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid())));
+            String fromUid = prefs.getString(PrefsKeys.FROM_LANGUAGE_UID, languagesList.getLanguages().get(0).getUid());
+            String toUid = prefs.getString(PrefsKeys.TO_LANGUAGE_UID, languagesList.getLanguages().get(1).getUid());
+
+            LanguageEntry fromLang = new LanguageEntry(languagesList.getLanguageName(fromUid), fromUid);
+            LanguageEntry toLang = new LanguageEntry(languagesList.getLanguageName(toUid), toUid);
+
+            f.setFromLanguage(fromLang);
+            f.setToLanguage(toLang);
         }
     }
 
@@ -106,11 +108,9 @@ public class MainActivity extends Activity
 
         if (fromLang != null) {
             editor.putString(PrefsKeys.FROM_LANGUAGE_UID, fromLang.getUid());
-            editor.putString(PrefsKeys.FROM_LANGUAGE_NAME, fromLang.getName());
         }
         if (toLang != null) {
             editor.putString(PrefsKeys.TO_LANGUAGE_UID, toLang.getUid());
-            editor.putString(PrefsKeys.TO_LANGUAGE_NAME, toLang.getName());
         }
         editor.apply();
     }

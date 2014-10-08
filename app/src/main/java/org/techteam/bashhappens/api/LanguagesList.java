@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class LanguagesList extends ServerResponse {
-
+    private Map<String, String> langsMap = new HashMap<String, String>();
     private ArrayList<LanguageEntry> langs = new ArrayList<LanguageEntry>();
     private Set<String> dirs = new HashSet<String>();
 
@@ -39,11 +39,10 @@ public class LanguagesList extends ServerResponse {
             Iterator<?> keys = langs.keys();
 
             while (keys.hasNext()) {
-                String key = (String)keys.next();
-                languagesList.langs.add(
-                        new LanguageEntry(
-                                (String) langs.get(key),
-                                key));
+                String uid = (String) keys.next();
+                String name = (String) langs.get(uid);
+                languagesList.langs.add(new LanguageEntry(name, uid));
+                languagesList.langsMap.put(uid, name);
             }
 
             Collections.sort(languagesList.langs);
@@ -65,6 +64,9 @@ public class LanguagesList extends ServerResponse {
 
     public ArrayList<LanguageEntry> getLanguages() {
         return langs;
+    }
+    public String getLanguageName(String uid) {
+        return langsMap.get(uid);
     }
     public Set<String> getDirections() {
         return dirs;
