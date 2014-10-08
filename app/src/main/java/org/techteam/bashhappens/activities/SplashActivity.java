@@ -1,4 +1,4 @@
-package org.techteam.bashhappens;
+package org.techteam.bashhappens.activities;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
+import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.IntentBuilder;
 

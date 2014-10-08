@@ -1,4 +1,4 @@
-package org.techteam.bashhappens;
+package org.techteam.bashhappens.activities;
 
 import android.app.Activity;
 import android.app.FragmentTransaction;
@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import org.techteam.bashhappens.R;
 import org.techteam.bashhappens.api.LangDirection;
 import org.techteam.bashhappens.api.LanguageEntry;
 import org.techteam.bashhappens.api.LanguagesList;
@@ -28,6 +29,8 @@ import org.techteam.bashhappens.services.BroadcastIntents;
 import org.techteam.bashhappens.services.ResponseKeys;
 import org.techteam.bashhappens.util.Keyboard;
 import org.techteam.bashhappens.util.Toaster;
+
+import java.util.Set;
 
 public class MainActivity extends Activity
     implements
@@ -168,11 +171,14 @@ public class MainActivity extends Activity
 
     private void showSettings() {
 //        Keyboard.hideSoftKeyboard(MainActivity.this, null); // TODO: need to hide keyboard somehow
-        getFragmentManager().beginTransaction()
+        /*getFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new SettingsFragment(), SettingsFragment.NAME)
                 .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .commit();
+                .commit();*/
+
+        Intent settingsIntent = new Intent(this, SettingsActivity.class);
+        startActivity(settingsIntent);
     }
 
     /************************** Callbacks **************************/
