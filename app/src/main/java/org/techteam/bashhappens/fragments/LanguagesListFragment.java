@@ -34,7 +34,7 @@ public class LanguagesListFragment extends Fragment {
     private OnLanguageSelectedListener mCallback;
 
 
-    public static LanguagesListFragment getInstance(LanguagesList languagesList, LangDirection direction) {
+    public static LanguagesListFragment newInstance(LanguagesList languagesList, LangDirection direction) {
         LanguagesListFragment f = new LanguagesListFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(BundleKeys.LANGUAGES_LIST, languagesList.getLanguages());

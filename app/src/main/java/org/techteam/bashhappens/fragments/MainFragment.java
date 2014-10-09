@@ -147,14 +147,14 @@ public class MainFragment extends Fragment
         fromLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showList(LangDirection.FROM, fromLanguage, toLanguage);
+                showList(LangDirection.FROM);
             }
         });
 
         toLanguageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showList(LangDirection.TO, fromLanguage, toLanguage);
+                showList(LangDirection.TO);
             }
         });
 
@@ -279,9 +279,9 @@ public class MainFragment extends Fragment
         return MainFragment.this.getActivity().getBaseContext();
     }
 
-    private void showList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
+    private void showList(LangDirection direction) {
         Keyboard.hideSoftKeyboard(getActivity(), textToTranslate);
-        showLangsCallback.onShowList(direction, fromLanguage, toLanguage);
+        showLangsCallback.onShowList(direction);
     }
 
     private void swapLanguages() {
@@ -310,7 +310,7 @@ public class MainFragment extends Fragment
 
 
     public interface OnShowLanguagesListListener {
-        void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage);
+        void onShowList(LangDirection direction);
     }
 
     public interface OnTranslateListener {

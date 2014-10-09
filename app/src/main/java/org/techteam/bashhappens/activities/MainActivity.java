@@ -195,8 +195,8 @@ public class MainActivity extends Activity
 
 
     @Override
-    public void onShowList(LangDirection direction, LanguageEntry fromLanguage, LanguageEntry toLanguage) {
-        LanguagesListFragment listFragment = LanguagesListFragment.getInstance(languagesList, direction);
+    public void onShowList(LangDirection direction) {
+        LanguagesListFragment listFragment = LanguagesListFragment.newInstance(languagesList, direction);
         getFragmentManager().beginTransaction()
                 .add(android.R.id.content, listFragment, LanguagesListFragment.NAME)
                 .addToBackStack(null)
