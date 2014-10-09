@@ -298,8 +298,10 @@ public class MainFragment extends Fragment
     }
 
     private void showProgress() {
-        getActivity().setProgressBarIndeterminateVisibility(true);
-        isTranslating = true;
+        if (getActivity() != null) {
+            getActivity().setProgressBarIndeterminateVisibility(true);
+            isTranslating = true;
+        }
     }
 
     private void hideProgress() {
