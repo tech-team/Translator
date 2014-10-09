@@ -319,10 +319,12 @@ public class MainFragment extends Fragment
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        String expectedKey = getString(R.string.pref_translate_on_the_fly_key);
+        if (isAdded()) {
+            String expectedKey = getString(R.string.pref_translate_on_the_fly_key);
 
-        if (key.equals(expectedKey)) {
-            translateOnTheFly = sharedPreferences.getBoolean(expectedKey, true);
+            if (key.equals(expectedKey)) {
+                translateOnTheFly = sharedPreferences.getBoolean(expectedKey, true);
+            }
         }
     }
 }
