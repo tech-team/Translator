@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BashHappens.iml" filepath="$PROJECT_DIR$/BashHappens.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Translator.iml" filepath="$PROJECT_DIR$/Translator.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bash-happens.iml" filepath="$PROJECT_DIR$/bash-happens.iml" />
     </modules>
   </component>
 </project>
